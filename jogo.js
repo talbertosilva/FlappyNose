@@ -36,11 +36,15 @@ function setup() {
 function getPoses(poses) {
 	//console.log(poses);
 	if (poses.length > 0) {
+		let nX = poses[0].pose.keypoints[0].position.x;
 		let nY = poses[0].pose.keypoints[0].position.y;
 
         noseY = lerp(noseY, nY, 0.5);
 
 		noseX = noseX + 4;
+
+		smooth();
+		line (nX,nY,noseX,noseY);
 	}
 }
 
@@ -49,12 +53,11 @@ function draw() {
 
 	image(video, width / 2, height / 2);
 
-	tmap.draw(x-0.5, y-0.5);
+	tmap.draw(x, y);
 	if (viewWalls) {
 		imageMode(CORNER);
 		image(walls, 0, 0);
 	}
-
 
 	/* -- TEXTO COM INFORMAÇÕES (coordenadas do nariz, cor detetada nessa coordenada, id da textura nessa coordenada) -- */
 
