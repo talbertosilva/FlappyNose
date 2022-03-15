@@ -57,9 +57,9 @@ function draw() {
 	image(smiley, noseX, noseY);
 
 	textSize(16);
-	fill(0);
-	text("Center: Map coordinates: " + round(noseX * 100) / 100 + ", " + round(noseY * 100) / 100, 10, 10);
-	text("Over Color: " + color(walls.get(walls.width / 2, walls.height / 2)), 10, 30);
+	fill(255);
+	text("Center: Map coordinates: " + round((noseX*40/640) * 100) / 100 + ", " + round((noseY*40/640) * 100) / 100, 10, 10);
+	text("Over Color: " + color(walls.get(walls.width, walls.height)), 10, 30);
 	text("Over Tile Index: " + tmap.getTileIndex(0, round(noseX*40/640), round(noseY*40/640)), 10, 50);
 
 	
@@ -73,9 +73,10 @@ function draw() {
 	tmap.drawLayer(1, x, y, walls);
 	// ...So we draw it on a separate canvas (and only when we need it).
 	//Comparing 2 colors won't work. We compare Color Strings.
-	if (color(walls.get(walls.width / 2, walls.height / 2)).toString() == tmap.getObjectsColor(1).toString()) {
-		noseX = prevx;
-		noseY = prevy;
+	if (tmap.getTileIndex(0, round(noseX*40/640), round(noseY*40/640)) !== 0) {
+		textSize(32);
+		fill(0, 255, 0);
+		text("TOCASTE!!", 320, 240);
 	}
 }
 
@@ -91,5 +92,5 @@ function initializeMap() {
 	console.log(tmap.getMapSize());
 	x = p.x / 2;
 	y = p.y / 2;
-	console.log(tmap.getTileIndex(0, 39, 29));
+	console.log(walls.get(walls.width / 2, walls.height / 2));
 }
