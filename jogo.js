@@ -1,7 +1,7 @@
 // Using an Object Layer to limit movement and changing Map Tiles.
 var tmap, smiley, plantsIndex, viewWalls = false;
 var x, y;
-let colected1 = false, colected2 = false, colected3 = false;
+let colected1 = false, colected2 = false, colected3 = false, colected4 = false, colected5 = false;
 
 let video, poseNet, prevnoseX, prevnoseY, xBadge, yBadge, xBird, yBird;
 let noseX = 50;
@@ -27,7 +27,7 @@ function setup() {
 	noStroke();
 
 	frameRate(30);
-	walls = createGraphics(640, 480);
+	walls = createGraphics(620, 460);
 	initializeMap();
 
 	video = createCapture(VIDEO);
@@ -42,9 +42,14 @@ function setup() {
 	xBadge = 190;
 	xBadge2 = 382;
 	xBadge3 = 558;
+	xBadge4 = 286;
+	xBadge5 = 470;
+
 	yBadge = random(208, 258);
 	yBadge2 = random(170, 220);
 	yBadge3 = random(188, 238);
+	yBadge4 = random(170, 220);
+	yBadge5 = random(188, 238);
 }
 
 
@@ -56,8 +61,7 @@ function getPoses(poses) {
 
 		noseY = lerp(noseY, nY, 0.5);
 
-		if (cursosESTG < 3) {
-			noseX = noseX + 4;
+		if (cursosESTG < 5) {
 			noseX = noseX + (width/98);
 		} else {
 			noseX = 50;
@@ -142,13 +146,19 @@ function draw() {
 
 		imageMode(CENTER);
 		if (colected1 == false) {
-			image(badge, xBadge, yBadge, 28, 28);
+			image(badge, xBadge, yBadge, 32, 32);
 		}
 		if (colected2 == false) {
 			image(badge, xBadge2, yBadge2, 32, 32);
 		}
 		if (colected3 == false) {
-			image(badge, xBadge3, yBadge3, 36, 36);
+			image(badge, xBadge3, yBadge3, 32, 32);
+		}
+		if (colected4 == false) {
+			image(badge, xBadge4, yBadge4, 32, 32);
+		}
+		if (colected5 == false) {
+			image(badge, xBadge5, yBadge5, 32, 32);
 		}
 
 		if (rectBall(xBadge, yBadge, 28, 28, noseX, noseY, 32, 32) && colected1 !== true) {
@@ -160,9 +170,15 @@ function draw() {
 		} else if (rectBall(xBadge3, yBadge3, 28, 28, noseX, noseY, 32, 32) && colected3 !== true) {
 			colected3 = true;
 			cursosESTG = cursosESTG + 1;
+		} else if (rectBall(xBadge4, yBadge4, 28, 28, noseX, noseY, 32, 32) && colected4 !== true) {
+			colected4 = true;
+			cursosESTG = cursosESTG + 1;
+		} else if (rectBall(xBadge5, yBadge5, 28, 28, noseX, noseY, 32, 32) && colected5 !== true) {
+			colected5 = true;
+			cursosESTG = cursosESTG + 1;
 		}
 
-		if (cursosESTG === 3){
+		if (cursosESTG === 5){
 			iniciar = false;
 			ganhou = true;
 		}
