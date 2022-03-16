@@ -138,7 +138,7 @@ function draw() {
 
 		image(video, width / 2, height / 2);
 
-		tmap.draw(mapaX, mapaY);
+		tmap.draw(x, y);
 		if (viewWalls) {
 			imageMode(CORNER);
 			image(walls, 0, 0);
@@ -191,22 +191,14 @@ function draw() {
 		text(`${cursosESTG}`, width / 2 - 24, 72);
 
 		walls.clear();
-		tmap.drawLayer(1, x * 1.03, y * 1.03, walls);
+		tmap.drawLayer(1, x, y, walls);
 
 		xBird = round(noseX * 40 / 640) + 1;
-		yBird = round(noseY * 40 / 640) + 1;
 
 		/* -- COLISÃO > caso esteja em cima dos objetos, o X/Y serão iguais aos X/Y antes da colisão --*/
-		if (tmap.getTileIndex(0, round(xBird), round(yBird)) !== 0) {
-			noseX = 50;
-			iniciar = false;
-			perdeu = true;
-			cursosESTG = 0;
-			colected1 = false;
-			colected2 = false;
-			colected3 = false;
-			noseY = prevnoseY;
-		} else {
+		if (tmap.getTileIndex(0, xBird, (round(noseY * 40 / 640))) !== 0 || tmap.getTileIndex(0, xBird, (round(noseY * 40 / 640) + 2 )) !== 0) {
+			location.reload();
+		}else{
 			imageMode(CENTER);
 			image(bird, noseX, noseY, 32, 32);
 
