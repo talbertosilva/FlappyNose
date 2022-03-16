@@ -8,10 +8,6 @@ let noseX = 50;
 let noseY = 220;
 let cursosESTG = 0;
 
-
-let width = 620;
-let height = 460;
-
 let iniciar = false;
 let perdeu = false;
 let ganhou = false;
@@ -26,21 +22,22 @@ function preload() {
 }
 
 function setup() {
-	createCanvas(width, height);
+	createCanvas(620, 460);
 	smooth();
 	noStroke();
-	frameRate(30);
 
-	walls = createGraphics(width, height);
+	frameRate(30);
+	walls = createGraphics(640, 480);
 	initializeMap();
 
 	video = createCapture(VIDEO);
 	video.hide();
-	
 
 	poseNet = ml5.poseNet(video);
 
 	poseNet.on('pose', getPoses);
+
+	image(beginScreen, 0, 0, width, height);
 
 	xBadge = 190;
 	xBadge2 = 382;
@@ -58,6 +55,7 @@ function setup() {
 
 
 function getPoses(poses) {
+	//console.log(poses);
 	if (poses.length > 0) {
 		let nX = poses[0].pose.keypoints[0].position.x;
 		let nY = poses[0].pose.keypoints[0].position.y;
@@ -132,29 +130,23 @@ function rectBall(rx, ry, rw, rh, bx, by, d) {
 }
 
 function draw() {
+
 	if (iniciar === false) {
 		noseX = 50;
 		noseY = 220;
-		colected1 = false;
-		colected2 = false;
-		colected3 = false;
-		colected4 = false;
-		colected5 = false;
-
-		imageMode(CENTER);
-		image(beginScreen, width/2, height/2, width, height);
 	} else {
 		background(tmap.getBackgroundColor());
 
 		image(video, width / 2, height / 2);
 
-		tmap.draw((noseX*16/640), y);
+		tmap.draw(x, y);
 		if (viewWalls) {
 			imageMode(CORNER);
-			image(walls, (noseX*16/640), 0);
+			image(walls, 0, 0);
 		}
 
 
+		imageMode(CENTER);
 		if (colected1 == false) {
 			image(badge, xBadge, yBadge, 28, 28);
 		}
@@ -202,8 +194,8 @@ function draw() {
 		walls.clear();
 		tmap.drawLayer(1, x * 1.03, y * 1.03, walls);
 
-		xBird = round(noseX * 16 / 640) + 1;
-		yBird = round(noseY * 16 / 640) + 1;
+		xBird = round(noseX * 40 / 640) + 1;
+		yBird = round(noseY * 40 / 640) + 1;
 
 		/* -- COLISÃO > caso esteja em cima dos objetos, o X/Y serão iguais aos X/Y antes da colisão --*/
 		if (tmap.getTileIndex(0, round(xBird), round(yBird)) !== 0) {
@@ -217,7 +209,7 @@ function draw() {
 			noseY = prevnoseY;
 		} else {
 			imageMode(CENTER);
-			image(bird, 50, noseY, 32, 32);
+			image(bird, noseX, noseY, 32, 32);
 
 			prevnoseY = noseY;
 		}
