@@ -1,35 +1,42 @@
 // Using an Object Layer to limit movement and changing Map Tiles.
 var tmap, smiley, plantsIndex, viewWalls = false;
 var x, y;
+let colected1 = false, colected2 = false, colected3 = false;
 
-let video;
-let poseNet;
+let video, poseNet, prevnoseX, prevnoseY, xBadge, yBadge;
 let noseX = 50;
-let noseY = 0;
-let prevnoseX;
-let prevnoseY;
+let noseY = 220;
+let cursosESTG = 0;
 
 function preload() {
 	tmap = loadTiledMap("mapaNivelUm", "data");
 	smiley = loadImage("data/smiley.png");
+	badge = loadImage("data/badgeteste1.png");
+	bird = loadImage("data/bird2.png");
 }
 
 function setup() {
 	createCanvas(640, 480);
+	smooth();
+  	noStroke();
+	
 	frameRate(30);
 	walls = createGraphics(640, 480);
 	initializeMap();
-	plantsIndex = [35];
-	fill(255);
+
 	video = createCapture(VIDEO);
-	video.size(640, 480);
 	video.hide();
 
 	poseNet = ml5.poseNet(video);
 
 	poseNet.on('pose', getPoses);
 
-	smooth();
+	xBadge = 200;
+	xBadge2 = 392;
+	xBadge3 = 568;
+	yBadge = random(208, 258);
+	yBadge2 = random(208, 258);
+	yBadge3 = random(208, 258);
 }
 
 
@@ -41,12 +48,70 @@ function getPoses(poses) {
 
         noseY = lerp(noseY, nY, 0.5);
 
-		noseX = noseX + 4;
+		if(cursosESTG<3){
+			noseX = noseX + 4;
+		} else {
+			noseX = 50;
+		}
 
 		smooth();
 		line (nX,nY,noseX,noseY);
 	}
 }
+
+function rectBall(rx, ry, rw, rh, bx, by, d) {
+
+	// first test the edges (this is necessary if the rectangle is larger
+	// than the ball) - do this with the Pythagorean theorem
+  
+	// if ball entire width position is between rect L/R sides
+	if (bx+d/2 >= rx-rw/2 && bx-d/2 <= rx+rw/2 && abs(ry-by) <= d/2) {
+	  return true;
+	}
+	// if not, check if ball's entire height is between top/bottom of the rect
+	else if (by+d/2 >= ry-rh/2 && by-d/2 <= ry+rh/2 && abs(rx-bx) <= d/2) {
+	  return true;
+	}
+  
+	// if that doesn't return a hit, find closest corner
+	// this is really just a point, so we can test if we've hit it 
+	// upper-left
+	var xDist = (rx-rw/2) - bx;  // same as ball/ball, but first value defines point, not center
+	var yDist = (ry-rh/2) - by;
+	var shortestDist = sqrt((xDist*xDist) + (yDist * yDist));
+  
+	// upper-right
+	xDist = (rx+rw/2) - bx;
+	yDist = (ry-rh/2) - by;
+	var distanceUR = sqrt((xDist*xDist) + (yDist * yDist));
+	if (distanceUR < shortestDist) {  // if this new distance is shorter...
+	  shortestDist = distanceUR;      // ... update
+	}
+  
+	// lower-right
+	xDist = (rx+rw/2) - bx;
+	yDist = (ry+rh/2) - by;
+	var distanceLR = sqrt((xDist*xDist) + (yDist * yDist));
+	if (distanceLR < shortestDist) {
+	  shortestDist = distanceLR;
+	}
+  
+	// lower-left
+	xDist = (rx-rw/2) - bx;
+	yDist = (ry+rh/2) - by;
+	var distanceLL = sqrt((xDist*xDist) + (yDist * yDist));
+	if (distanceLL < shortestDist) {
+	  shortestDist = distanceLL;
+	}
+  
+	// test for collision
+	if (shortestDist < d/2) {  // if less than radius
+	  return true;             // return true
+	}
+	else {                     // otherwise, return false
+	  return false;
+	}
+  }
 
 function draw() {
 	background(tmap.getBackgroundColor());
@@ -59,22 +124,39 @@ function draw() {
 		image(walls, 0, 0);
 	}
 
+
+	imageMode(CENTER);
+	if(colected1 == false) {
+		image(badge, xBadge, yBadge, 57, 40.6);
+	}
+	if(colected2 == false) {
+		image(badge, xBadge2, yBadge2, 57, 40.6);
+	}
+	if(colected3 == false) {
+		image(badge, xBadge3, yBadge3, 57, 40.6);
+	}
+	
+	if(rectBall(xBadge, yBadge, 57, 40.6, noseX, noseY, 32) && colected1 !== true){
+		colected1 = true;
+		cursosESTG = cursosESTG + 1;
+	} else if(rectBall(xBadge2, yBadge2, 57, 40.6, noseX, noseY, 32) && colected2 !== true){
+		colected2 = true;
+		cursosESTG = cursosESTG + 1;
+	} else if(rectBall(xBadge3, yBadge3, 57, 40.6, noseX, noseY, 32) && colected3 !== true) {
+		colected3 = true;
+		cursosESTG = cursosESTG + 1;
+	}
+
 	/* -- TEXTO COM INFORMAÇÕES (coordenadas do nariz, cor detetada nessa coordenada, id da textura nessa coordenada) -- */
 
-	// textSize(16);
-	// fill(255);
+	textSize(16);
+	fill(255);
+	text(`Cursos: ${cursosESTG}`, 10, 10);
 	// text("Center: Map coordinates: " + round((noseX*40/640) * 100) / 100 + ", " + round((noseY*40/640) * 100) / 100, 10, 10);
 	// text("Over Color: " + color(walls.get(walls.width, walls.height)), 10, 30);
 	// text("Over Tile Index: " + tmap.getTileIndex(0, round(noseX*40/640), round(noseY*40/640)), 10, 50);
-
-	/* -- CÓDIGO PARA OS COLÉTAVEIS -- */
-
-	if (plantsIndex.indexOf(tmap.getTileIndex(0, (round(noseX*40/640)), round(noseY*40/640))) >= 0) {
-	 	tmap.setTileIndex(0, round(noseX*40/640), round(noseY*40/640), 0);
-	}
 	
 	walls.clear();
-	tmap.drawLayer(1, x, y, walls);
 
 	/* -- COLISÃO > caso esteja em cima dos objetos, o X/Y serão iguais aos X/Y antes da colisão --*/
 	if (tmap.getTileIndex(0, round(noseX*40/640), round(noseY*40/640)) !== 0) {
@@ -82,16 +164,10 @@ function draw() {
 		noseY = prevnoseY;
 	} else {
 		imageMode(CENTER);
-		image(smiley, noseX, noseY);
+		image(bird, noseX, noseY, 32, 32);
 		prevnoseY = noseY;
 	}
 }
-
-
-/* -- TECLA L PARA VER OS OBJETOS INVISIVEIS DA COLISÃO -- */
-function keyPressed(){
-	if(key == 'l' || key == 'L') viewWalls = !viewWalls;
-  }
   
 /* -- INICIA O MAPA COM O DEVIDO TAMANHO EM TILES (40 x 30), 40 * 16 = 640 = tamanho da camera -- */
 function initializeMap() {
