@@ -8,6 +8,8 @@ let noseX = 50;
 let noseY = 220;
 let cursosESTG = 0;
 
+let mapaX, mapaY;
+
 let iniciar = false;
 let perdeu = false;
 let ganhou = false;
@@ -64,13 +66,11 @@ function getPoses(poses) {
 
 		if (cursosESTG < 5) {
 			noseX = noseX + (width/98);
+			mapaX = mapaX + (4*16/640);
 		} else {
 			noseX = 50;
 			noseY = 220;
 		}
-
-		smooth();
-		line(nX, nY, noseX, noseY);
 	}
 }
 
@@ -138,7 +138,7 @@ function draw() {
 
 		image(video, width / 2, height / 2);
 
-		tmap.draw(x, y);
+		tmap.draw(mapaX, mapaY);
 		if (viewWalls) {
 			imageMode(CORNER);
 			image(walls, 0, 0);
@@ -241,4 +241,7 @@ function initializeMap() {
 	var p = tmap.getMapSize();
 	x = p.x / 2;
 	y = p.y / 2;
+
+	mapaX = p.x / 2;
+	mapaY = p.y / 2;
 }
