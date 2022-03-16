@@ -11,6 +11,7 @@ let cursosESTG = 0;
 let iniciar = false;
 let perdeu = false;
 let ganhou = false;
+let commit = true;
 
 function preload() {
 	newFont = loadFont('fonts/dimitri.ttf');
