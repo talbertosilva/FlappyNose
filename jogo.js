@@ -66,6 +66,7 @@ function getPoses(poses) {
 
 		if (cursosESTG < 5) {
 			noseX = noseX + 4;
+			noseX = noseX + (width/94);
 		} else {
 			noseX = 50;
 			noseY = 220;
