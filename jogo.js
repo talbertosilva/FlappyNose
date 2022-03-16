@@ -64,7 +64,7 @@ function getPoses(poses) {
 
 		noseY = lerp(noseY, nY, 0.5);
 
-		if (cursosESTG < 5) {
+		if (cursosESTG < 3) {
 			noseX = noseX + 4;
 			noseX = noseX + (width/94);
 		} else {
