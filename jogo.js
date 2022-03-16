@@ -8,11 +8,17 @@ let noseX = 50;
 let noseY = 220;
 let cursosESTG = 0;
 
+let iniciar = false;
+let perdeu = false;
+let ganhou = false;
+
 function preload() {
+	newFont = loadFont('fonts/dimitri.ttf');
 	tmap = loadTiledMap("mapaNivelUm", "data");
 	smiley = loadImage("data/smiley.png");
 	badge = loadImage("data/badgeteste1.png");
 	bird = loadImage("data/bird2.png");
+	beginScreen = loadImage("data/WallpaperBegin.png");
 }
 
 function setup() {
@@ -30,6 +36,8 @@ function setup() {
 	poseNet = ml5.poseNet(video);
 
 	poseNet.on('pose', getPoses);
+
+	image(beginScreen, 0, 0, width, height);
 
 	xBadge = 190;
 	xBadge2 = 382;
@@ -114,71 +122,78 @@ function rectBall(rx, ry, rw, rh, bx, by, d) {
 	}
 }
 
-function rectRect(x1, y1, w1, h1, x2, y2, w2, h2) {
-	// test for collision
-	if (x1+w1/2 >= x2-w2/2 && x1-w1/2 <= x2+w2/2 && y1+h1/2 >= y2-h2/2 && y1-h1/2 <= y2+h2/2) {
-	  return true;    // if a hit, return true
-	}
-	else {            // if not, return false
-	  return false;
-	}
-  }
-
 function draw() {
-	background(tmap.getBackgroundColor());
 
-	image(video, width / 2, height / 2);
-
-	tmap.draw(x, y);
-	if (viewWalls) {
-		imageMode(CORNER);
-		image(walls, 0, 0);
-	}
-
-
-	imageMode(CENTER);
-	if (colected1 == false) {
-		image(badge, xBadge, yBadge, 28, 28);
-	}
-	if (colected2 == false) {
-		image(badge, xBadge2, yBadge2, 32, 32);
-	}
-	if (colected3 == false) {
-		image(badge, xBadge3, yBadge3, 36, 36);
-	}
-
-	if (rectBall(xBadge, yBadge, 28, 28, noseX, noseY, 32, 32) && colected1 !== true) {
-		colected1 = true;
-		cursosESTG = cursosESTG + 1;
-	} else if (rectBall(xBadge2, yBadge2, 28, 28, noseX, noseY, 32, 32) && colected2 !== true) {
-		colected2 = true;
-		cursosESTG = cursosESTG + 1;
-	} else if (rectBall(xBadge3, yBadge3, 28, 28, noseX, noseY, 32, 32) && colected3 !== true) {
-		colected3 = true;
-		cursosESTG = cursosESTG + 1;
-	}
-
-	/* -- TEXTO COM INFORMAÇÕES (coordenadas do nariz, cor detetada nessa coordenada, id da textura nessa coordenada) -- */
-
-	textSize(48);
-	fill(255);
-	text(`${cursosESTG}`, 20, 40);
-	
-	walls.clear();
-	tmap.drawLayer(1, x*1.03, y*1.03, walls);
-
-	xBird = round(noseX * 40 / 640) + 1;
-	yBird = round(noseY * 40 / 640) + 1;
-
-	/* -- COLISÃO > caso esteja em cima dos objetos, o X/Y serão iguais aos X/Y antes da colisão --*/
-	if (tmap.getTileIndex(0, round(xBird), round(yBird)) !== 0) {
+	if (iniciar === false) {
 		noseX = 50;
-		noseY = prevnoseY;
+		noseY = 220;
 	} else {
-		imageMode(CENTER);
-		image(bird, noseX, noseY, 32, 32);
+		background(tmap.getBackgroundColor());
 
-		prevnoseY = noseY;
+		image(video, width / 2, height / 2);
+
+		tmap.draw(x, y);
+		if (viewWalls) {
+			imageMode(CORNER);
+			image(walls, 0, 0);
+		}
+
+
+		imageMode(CENTER);
+		if (colected1 == false) {
+			image(badge, xBadge, yBadge, 28, 28);
+		}
+		if (colected2 == false) {
+			image(badge, xBadge2, yBadge2, 32, 32);
+		}
+		if (colected3 == false) {
+			image(badge, xBadge3, yBadge3, 36, 36);
+		}
+
+		if (rectBall(xBadge, yBadge, 28, 28, noseX, noseY, 32, 32) && colected1 !== true) {
+			colected1 = true;
+			cursosESTG = cursosESTG + 1;
+		} else if (rectBall(xBadge2, yBadge2, 28, 28, noseX, noseY, 32, 32) && colected2 !== true) {
+			colected2 = true;
+			cursosESTG = cursosESTG + 1;
+		} else if (rectBall(xBadge3, yBadge3, 28, 28, noseX, noseY, 32, 32) && colected3 !== true) {
+			colected3 = true;
+			cursosESTG = cursosESTG + 1;
+		}
+
+		if (cursosESTG === 3){
+			iniciar = false;
+			ganhou = true;
+		}
+
+		/* -- TEXTO COM INFORMAÇÕES (coordenadas do nariz, cor detetada nessa coordenada, id da textura nessa coordenada) -- */
+		textFont(newFont);
+		textSize(48);
+		fill(255);
+		text(`${cursosESTG}`, width / 2 - 24, 72);
+
+		walls.clear();
+		tmap.drawLayer(1, x * 1.03, y * 1.03, walls);
+
+		xBird = round(noseX * 40 / 640) + 1;
+		yBird = round(noseY * 40 / 640) + 1;
+
+		/* -- COLISÃO > caso esteja em cima dos objetos, o X/Y serão iguais aos X/Y antes da colisão --*/
+		if (tmap.getTileIndex(0, round(xBird), round(yBird)) !== 0) {
+			noseX = 50;
+			iniciar = false;
+			perdeu = true;
+			cursosESTG = 0;
+			colected1 = false;
+			colected2 = false;
+			colected3 = false;
+			noseY = prevnoseY;
+		} else {
+			imageMode(CENTER);
+			image(bird, noseX, noseY, 32, 32);
+
+			prevnoseY = noseY;
+		}
 	}
 }
 
@@ -187,8 +202,14 @@ function keyPressed() {
 }
 
 function mouseClicked() {
-	if(cursosESTG === 3){
+	if (iniciar === false) {
+		iniciar = !iniciar;
+		perdeu = false;
+	}
+	if (cursosESTG === 3) {
 		cursosESTG = 0;
+		iniciar = false;
+		perdeu = false;
 		colected1 = false;
 		colected2 = false;
 		colected3 = false;
