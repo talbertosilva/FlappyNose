@@ -1,60 +1,42 @@
 // Using an Object Layer to limit movement and changing Map Tiles.
-var tmap, smiley, plantsIndex, viewWalls = false;
+var tmap, smiley, plantsIndex;
 var x, y;
-let colected1 = false, colected2 = false, colected3 = false, colected4 = false, colected5 = false;
 
-let video, poseNet, prevnoseX, prevnoseY, xBadge, yBadge, xBird, yBird;
-let noseX = 50;
-let noseY = 220;
+let video;
+
+let noseX = 0;
+let noseY = 0;
+
+let smileyX = 620 / 2;
+
+let morto = true;
+
+let colected1 = false, colected2 = false, colected3 = false, colected4 = false, colected5 = false;
 let cursosESTG = 0;
 
-let mapaX, mapaY;
-
-let iniciar = false;
-let perdeu = false;
-let ganhou = false;
-let committ = true;
 
 function preload() {
-	newFont = loadFont('fonts/dimitri.ttf');
 	tmap = loadTiledMap("mapaNivelUm", "data");
-	smiley = loadImage("data/smiley.png");
-	badge = loadImage("data/badgeteste1.png");
 	bird = loadImage("data/bird2.png");
-	beginScreen = loadImage("data/WallpaperBegin.png");
+	newFont = loadFont('fonts/dimitri.ttf');
+	begin = loadImage("data/WallpaperBegin.png");
+	badge = loadImage("data/badgeteste1.png");
 }
 
 function setup() {
 	createCanvas(620, 460);
-	smooth();
-	noStroke();
-
-	frameRate(30);
-	walls = createGraphics(620, 460);
 	initializeMap();
+	fill(255);
 
 	video = createCapture(VIDEO);
 	video.hide();
 
+	plantsIndex = [3];
+
 	poseNet = ml5.poseNet(video);
 
 	poseNet.on('pose', getPoses);
-
-	image(beginScreen, 0, 0, width, height);
-
-	xBadge = 190;
-	xBadge2 = 382;
-	xBadge3 = 558;
-	xBadge4 = 286;
-	xBadge5 = 470;
-
-	yBadge = random(208, 258);
-	yBadge2 = random(170, 220);
-	yBadge3 = random(188, 238);
-	yBadge4 = random(170, 220);
-	yBadge5 = random(188, 238);
 }
-
 
 function getPoses(poses) {
 	//console.log(poses);
@@ -62,15 +44,13 @@ function getPoses(poses) {
 		let nX = poses[0].pose.keypoints[0].position.x;
 		let nY = poses[0].pose.keypoints[0].position.y;
 
-		noseY = lerp(noseY, nY, 0.5);
-
-		if (cursosESTG < 5) {
-			noseX = noseX + (width/98);
-			mapaX = mapaX + (4*16/640);
+		if (cursosESTG < 10) {
+			noseX = noseX + 0.75;
 		} else {
-			noseX = 50;
-			noseY = 220;
+			noseX = 0;
+			noseY = 0;
 		}
+		noseY = lerp(noseY, nY, 0.75);
 	}
 }
 
@@ -129,111 +109,52 @@ function rectBall(rx, ry, rw, rh, bx, by, d) {
 }
 
 function draw() {
-
-	if (iniciar === false) {
-		noseX = 50;
-		noseY = 220;
+	if (morto) {
+		imageMode(CORNER);
+		image(begin, 0, 0, 620, 460);
 	} else {
 		background(tmap.getBackgroundColor());
 
-		image(video, width / 2, height / 2);
+		imageMode(CORNER);
+		image(video, 0, 0);
 
-		tmap.draw(x, y);
-		if (viewWalls) {
-			imageMode(CORNER);
-			image(walls, 0, 0);
-		}
+		tmap.draw(x, (tmap.getMapSize().y / 2));
 
 
 		imageMode(CENTER);
-		if (colected1 == false) {
-			image(badge, xBadge, yBadge, 32, 32);
-		}
-		if (colected2 == false) {
-			image(badge, xBadge2, yBadge2, 32, 32);
-		}
-		if (colected3 == false) {
-			image(badge, xBadge3, yBadge3, 32, 32);
-		}
-		if (colected4 == false) {
-			image(badge, xBadge4, yBadge4, 32, 32);
-		}
-		if (colected5 == false) {
-			image(badge, xBadge5, yBadge5, 32, 32);
-		}
+		image(bird, smileyX, noseY, 32, 32);
 
-		if (rectBall(xBadge, yBadge, 28, 28, noseX, noseY, 32, 32) && colected1 !== true) {
-			colected1 = true;
-			cursosESTG = cursosESTG + 1;
-		} else if (rectBall(xBadge2, yBadge2, 28, 28, noseX, noseY, 32, 32) && colected2 !== true) {
-			colected2 = true;
-			cursosESTG = cursosESTG + 1;
-		} else if (rectBall(xBadge3, yBadge3, 28, 28, noseX, noseY, 32, 32) && colected3 !== true) {
-			colected3 = true;
-			cursosESTG = cursosESTG + 1;
-		} else if (rectBall(xBadge4, yBadge4, 28, 28, noseX, noseY, 32, 32) && colected4 !== true) {
-			colected4 = true;
-			cursosESTG = cursosESTG + 1;
-		} else if (rectBall(xBadge5, yBadge5, 28, 28, noseX, noseY, 32, 32) && colected5 !== true) {
-			colected5 = true;
-			cursosESTG = cursosESTG + 1;
-		}
-
-		if (cursosESTG === 5){
-			iniciar = false;
-			ganhou = true;
-		}
-
-		/* -- TEXTO COM INFORMAÇÕES (coordenadas do nariz, cor detetada nessa coordenada, id da textura nessa coordenada) -- */
 		textFont(newFont);
 		textSize(48);
 		fill(255);
 		text(`${cursosESTG}`, width / 2 - 24, 72);
 
-		walls.clear();
-		tmap.drawLayer(1, x, y, walls);
+		x = noseX / 2;
+		y = (noseY * 56 / 640);
 
-		xBird = round(noseX * 40 / 640) + 1;
+		if (plantsIndex.indexOf(tmap.getTileIndex(0, round(x), round(y-4.5))) >= 0) {
+			tmap.setTileIndex(0, round(x), round(y-4.5), 0);
+			cursosESTG = cursosESTG + 1;
+		}
 
-		/* -- COLISÃO > caso esteja em cima dos objetos, o X/Y serão iguais aos X/Y antes da colisão --*/
-		if (tmap.getTileIndex(0, xBird, (round(noseY * 40 / 640))) !== 0 || tmap.getTileIndex(0, xBird, (round(noseY * 40 / 640) + 2 )) !== 0) {
-			location.reload();
-		}else{
-			imageMode(CENTER);
-			image(bird, noseX, noseY, 32, 32);
-
-			prevnoseY = noseY;
+		if (tmap.getTileIndex(0, round(x), round(y-4.5)) !== 0) {
+			noseX = 0;
+			noseY = 0;
+			morto = true;
 		}
 	}
 }
 
-function keyPressed() {
-	if (key == 'l' || key == 'L') viewWalls = !viewWalls;
-}
-
-function mouseClicked() {
-	if (iniciar === false) {
-		iniciar = !iniciar;
-		perdeu = false;
-	}
-	if (cursosESTG === 3) {
-		cursosESTG = 0;
-		iniciar = false;
-		perdeu = false;
-		colected1 = false;
-		colected2 = false;
-		colected3 = false;
+function mouseClicked(){
+	if(morto = true && noseX !== 0){
+		morto = !morto;
 	}
 }
 
-/* -- INICIA O MAPA COM O DEVIDO TAMANHO EM TILES (40 x 30), 40 * 16 = 640 = tamanho da camera -- */
 function initializeMap() {
 	tmap.setPositionMode("MAP");
 	tmap.setDrawMode(CENTER);
 	var p = tmap.getMapSize();
 	x = p.x / 2;
 	y = p.y / 2;
-
-	mapaX = p.x / 2;
-	mapaY = p.y / 2;
 }
