@@ -34,6 +34,7 @@ function setup() {
 	initializeMap(tmap);
 	initializeMap(tmap2);
 	video = createCapture(VIDEO);
+	video.frameRate(30);
 	video.hide();
 
 	poseNet = ml5.poseNet(video);
