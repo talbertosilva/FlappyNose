@@ -7,31 +7,29 @@ let video;
 let noseX = 0;
 let noseY = 0;
 
-let smileyX = 620 / 2;
+let initialBirdX = 100;
 
-let morto = true;
+let tunelX = 320;
 
 let colected1 = false, colected2 = false, colected3 = false, colected4 = false, colected5 = false;
 let cursosESTG = 0;
 
 
 function preload() {
-	tmap = loadTiledMap("mapaNivelUm", "data");
 	bird = loadImage("data/bird2.png");
 	newFont = loadFont('fonts/dimitri.ttf');
 	begin = loadImage("data/WallpaperBegin.png");
 	badge = loadImage("data/badgeteste1.png");
+	tunelTop = loadImage("data/Tunnel.png");
+	tunelDown = loadImage("data/Tunnel2.png");
+	logo = loadImage("data/logo.png");
 }
 
 function setup() {
-	createCanvas(620, 460);
-	initializeMap();
-	fill(255);
+	createCanvas(640, 480);
 
 	video = createCapture(VIDEO);
 	video.hide();
-
-	plantsIndex = [3];
 
 	poseNet = ml5.poseNet(video);
 
@@ -41,16 +39,20 @@ function setup() {
 function getPoses(poses) {
 	//console.log(poses);
 	if (poses.length > 0) {
-		let nX = poses[0].pose.keypoints[0].position.x;
 		let nY = poses[0].pose.keypoints[0].position.y;
 
-		if (cursosESTG < 10) {
-			noseX = noseX + 0.75;
-		} else {
-			noseX = 0;
-			noseY = 0;
-		}
-		noseY = lerp(noseY, nY, 0.75);
+		noseY = lerp(noseY, nY, 0.5);
+	}
+}
+
+function rectRect(x1, y1, w1, h1, x2, y2, w2, h2) {
+
+	// test for collision
+	if (x1 + w1 / 2 >= x2 - w2 / 2 && x1 - w1 / 2 <= x2 + w2 / 2 && y1 + h1 / 2 >= y2 - h2 / 2 && y1 - h1 / 2 <= y2 + h2 / 2) {
+		return true;    // if a hit, return true
+	}
+	else {            // if not, return false
+		return false;
 	}
 }
 
@@ -109,52 +111,21 @@ function rectBall(rx, ry, rw, rh, bx, by, d) {
 }
 
 function draw() {
-	if (morto) {
-		imageMode(CORNER);
-		image(begin, 0, 0, 620, 460);
-	} else {
-		background(tmap.getBackgroundColor());
+	background('grey');
 
-		imageMode(CORNER);
-		image(video, 0, 0);
+	imageMode(CORNER);
+	image(video, 0, 0);
 
-		tmap.draw(x, (tmap.getMapSize().y / 2));
-
-
-		imageMode(CENTER);
-		image(bird, smileyX, noseY, 32, 32);
-
-		textFont(newFont);
-		textSize(48);
-		fill(255);
-		text(`${cursosESTG}`, width / 2 - 24, 72);
-
-		x = noseX / 2;
-		y = (noseY * 56 / 640);
-
-		if (plantsIndex.indexOf(tmap.getTileIndex(0, round(x), round(y-4.5))) >= 0) {
-			tmap.setTileIndex(0, round(x), round(y-4.5), 0);
-			cursosESTG = cursosESTG + 1;
-		}
-
-		if (tmap.getTileIndex(0, round(x), round(y-4.5)) !== 0) {
-			noseX = 0;
-			noseY = 0;
-			morto = true;
-		}
+	for(let i = 1; i < 25; i++){
+		image(tunelTop, tunelX + (150 * i), random(-540, -440));
+		image(tunelDown, tunelX + (150 * i), random(300, 400));
 	}
-}
 
-function mouseClicked(){
-	if(morto = true && noseX !== 0){
-		morto = !morto;
-	}
-}
+	tunelX = tunelX - 1.5;
 
-function initializeMap() {
-	tmap.setPositionMode("MAP");
-	tmap.setDrawMode(CENTER);
-	var p = tmap.getMapSize();
-	x = p.x / 2;
-	y = p.y / 2;
+	imageMode(CENTER);
+	image(bird, initialBirdX, noseY, 32, 32);
+
+	imageMode(CORNER);
+	image(logo, 25, 25, 120, 60);
 }
