@@ -1,6 +1,5 @@
 // Using an Object Layer to limit movement and changing Map Tiles.
 var tmap, tmap2, smiley, plantsIndex, viewWalls = false;
-var x, y;
 let colected1 = false, colected2 = false, colected3 = false, colected4 = false, colected5 = false;
 
 let video, poseNet, prevnoseX, prevnoseY, xBadge, yBadge, xBird, yBird;
@@ -8,9 +7,8 @@ let noseX = 50;
 let noseY = 220;
 let cursosESTG = 0;
 
-let mapaX = 0, mapaY = 0;
-let mapaX2 = 0, mapaY2 = 0;
-
+let x = 0, y = 0;
+let x2 = 200, y2 = 0;
 let iniciar = false;
 let perdeu = false;
 let ganhou = false;
@@ -68,8 +66,8 @@ function getPoses(poses) {
 
 		if (cursosESTG < 5) {
 			noseX = noseX + (width/98);
-			mapaX = mapaX + (8*16/640);
-			mapaX2 = mapaX2 + (8*16/640);
+			x = x + (8*16/640);
+			x2 = x2 + (8*16/640);
 		} else {
 			noseX = 50;
 			noseY = 220;
@@ -138,11 +136,12 @@ function draw() {
 		noseY = 220;
 	} else {
 		background(tmap.getBackgroundColor());
+		
 
 		image(video, width / 2, height / 2);
 
-		tmap.draw(mapaX, mapaY);
-		tmap2.draw(mapaX2, mapaY2);
+		tmap.draw(x, y);
+		tmap2.draw(x2, y2);
 		
 		if (viewWalls) {
 			imageMode(CORNER);
@@ -196,8 +195,6 @@ function draw() {
 		text(`${cursosESTG}`, width / 2 - 24, 72);
 
 		walls.clear();
-		tmap.drawLayer(1, x * 1.03, y * 1.03, walls);
-		tmap2.drawLayer(1, x * 1.03, y * 1.03, walls);
 
 		xBird = round(noseX * 40 / 640) + 1;
 		yBird = round(noseY * 40 / 640) + 1;
@@ -246,7 +243,12 @@ function initializeMap(map) {
 		map.setDrawMode(CENTER);
 		var p = map.getMapSize();
 
+		if(map == tmap){
 		x = p.x / 2;
 		y = p.y / 2;
-	
+	}
+	else{
+		x2 = - p.x / 2;
+		y2 = p.y / 2;
+	}
 }
