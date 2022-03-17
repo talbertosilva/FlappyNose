@@ -198,19 +198,11 @@ function draw() {
 		walls.clear();
 
 		xBird = round(noseX * 40 / 640) + 1;
-		yBird = round(noseY * 40 / 640) + 1;
 
 		/* -- COLISÃO > caso esteja em cima dos objetos, o X/Y serão iguais aos X/Y antes da colisão --*/
-		if (tmap.getTileIndex(0, round(xBird), round(yBird)) !== 0) {
-			noseX = 50;
-			iniciar = false;
-			perdeu = true;
-			cursosESTG = 0;
-			colected1 = false;
-			colected2 = false;
-			colected3 = false;
-			noseY = prevnoseY;
-		} else {
+		if (tmap.getTileIndex(0, xBird, (round(noseY * 40 / 640))) !== 0 || tmap.getTileIndex(0, xBird, (round(noseY * 40 / 640) + 2 )) !== 0) {
+			location.reload();
+		}else{
 			imageMode(CENTER);
 			image(bird, noseX, noseY, 32, 32);
 
