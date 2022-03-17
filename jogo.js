@@ -1,5 +1,5 @@
 // Using an Object Layer to limit movement and changing Map Tiles.
-var tmap, smiley, plantsIndex, viewWalls = false;
+var tmap, tmap2, smiley, plantsIndex, viewWalls = false;
 var x, y;
 let colected1 = false, colected2 = false, colected3 = false, colected4 = false, colected5 = false;
 
@@ -8,7 +8,8 @@ let noseX = 50;
 let noseY = 220;
 let cursosESTG = 0;
 
-let mapaX, mapaY;
+let mapaX = 0, mapaY = 0;
+let mapaX2 = 0, mapaY2 = 0;
 
 let iniciar = false;
 let perdeu = false;
@@ -18,6 +19,7 @@ let committ = true;
 function preload() {
 	newFont = loadFont('fonts/dimitri.ttf');
 	tmap = loadTiledMap("mapaNivelUm", "data");
+	tmap2 = loadTiledMap("mapaNivelUm", "data");
 	smiley = loadImage("data/smiley.png");
 	badge = loadImage("data/badgeteste1.png");
 	bird = loadImage("data/bird2.png");
@@ -31,8 +33,8 @@ function setup() {
 
 	frameRate(30);
 	walls = createGraphics(620, 460);
-	initializeMap();
-
+	initializeMap(tmap);
+	initializeMap(tmap2);
 	video = createCapture(VIDEO);
 	video.hide();
 
@@ -66,7 +68,8 @@ function getPoses(poses) {
 
 		if (cursosESTG < 5) {
 			noseX = noseX + (width/98);
-			mapaX = mapaX + (4*16/640);
+			mapaX = mapaX + (8*16/640);
+			mapaX2 = mapaX2 + (8*16/640);
 		} else {
 			noseX = 50;
 			noseY = 220;
@@ -139,6 +142,8 @@ function draw() {
 		image(video, width / 2, height / 2);
 
 		tmap.draw(mapaX, mapaY);
+		tmap2.draw(mapaX2, mapaY2);
+		
 		if (viewWalls) {
 			imageMode(CORNER);
 			image(walls, 0, 0);
@@ -192,6 +197,7 @@ function draw() {
 
 		walls.clear();
 		tmap.drawLayer(1, x * 1.03, y * 1.03, walls);
+		tmap2.drawLayer(1, x * 1.03, y * 1.03, walls);
 
 		xBird = round(noseX * 40 / 640) + 1;
 		yBird = round(noseY * 40 / 640) + 1;
@@ -235,13 +241,12 @@ function mouseClicked() {
 }
 
 /* -- INICIA O MAPA COM O DEVIDO TAMANHO EM TILES (40 x 30), 40 * 16 = 640 = tamanho da camera -- */
-function initializeMap() {
-	tmap.setPositionMode("MAP");
-	tmap.setDrawMode(CENTER);
-	var p = tmap.getMapSize();
-	x = p.x / 2;
-	y = p.y / 2;
+function initializeMap(map) {
+		map.setPositionMode("MAP");
+		map.setDrawMode(CENTER);
+		var p = map.getMapSize();
 
-	mapaX = p.x / 2;
-	mapaY = p.y / 2;
+		x = p.x / 2;
+		y = p.y / 2;
+	
 }
