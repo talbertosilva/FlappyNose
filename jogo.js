@@ -9,7 +9,13 @@ let noseY = 0;
 
 let smileyX = 620 / 2;
 
-let morto = true;
+let stage = "begin";
+//stages:
+//begin - imagem de inicio
+//menu - selecao de nivel
+//game - jogo
+//Achievments - menu de achievments
+
 
 let colected1 = false, colected2 = false, colected3 = false, colected4 = false, colected5 = false;
 let cursosESTG = 0;
@@ -20,6 +26,7 @@ function preload() {
 	bird = loadImage("data/bird2.png");
 	newFont = loadFont('fonts/dimitri.ttf');
 	begin = loadImage("data/WallpaperBegin.png");
+	nivel1 = loadImage("data/nivel1.png");
 	badge = loadImage("data/badgeteste1.png");
 }
 
@@ -109,10 +116,10 @@ function rectBall(rx, ry, rw, rh, bx, by, d) {
 }
 
 function draw() {
-	if (morto) {
+	if (stage == "begin") {
 		imageMode(CORNER);
 		image(begin, 0, 0, 620, 460);
-	} else {
+	} else if (stage == "game") {
 		background(tmap.getBackgroundColor());
 
 		imageMode(CORNER);
@@ -139,16 +146,32 @@ function draw() {
 
 		if (tmap.getTileIndex(0, round(x), round(y-4.5)) !== 0) {
 			noseX = 0;
-			noseY = 0;
-			morto = true;
+			noseY = 200;
+			stage = "begin";
 		}
 	}
+	else if(stage == "menu"){
+		imageMode(CORNER);
+		image(nivel1, 20, 20, 300, 60);
+
+	}
+	else if(stage == "pause"){
+		imageMode(CORNER);
+		image(nivel1, 20, 20, 300, 60);
+
+	}
+	
+	else if(stage == "achievments"){
+		
+	}
+
 }
 
 function mouseClicked(){
-	if(morto = true && noseX !== 0){
-		morto = !morto;
+	if(stage == "begin" && noseX !== 0){
+		stage = "menu";
 	}
+
 }
 
 function initializeMap() {
