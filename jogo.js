@@ -22,6 +22,9 @@ let nivelQuatro = false;
 let nivelCinco = false;
 let nivelSeis = false;
 
+let textoX = 640;
+let textoY = 480 - 16;
+
 function preload() {
 	bird = loadImage("data/bird2.png");
 	newFont = loadFont('fonts/robotCrush.ttf');
@@ -100,6 +103,11 @@ function draw() {
 		imageMode(CENTER);
 		image(botao, width / 2, 330);
 		image(conquistas, width / 2, 365);
+
+		textSize (16);
+		fill(255);
+		text("Trabalho realizado por: João Pires, Nelson Dias, Tiago Silva", textoX, textoY);
+		textoX = textoX - 1.5;
 
 		if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 315 && mouseY <= 345) && inicio) {
 			image(botao, width / 2, 330, 220, 35);
