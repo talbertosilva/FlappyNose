@@ -1,6 +1,4 @@
-// Using an Object Layer to limit movement and changing Map Tiles.
-var tmap, smiley, plantsIndex;
-var x, y, topY = [];
+var x, y, topY = [], iconY = [], collected = [];
 
 let video;
 
@@ -9,9 +7,9 @@ let noseY = 0;
 
 let initialBirdX = 100;
 
-let tunelX = 320;
+let tunelX;
+let iconX;
 
-let colected1 = false, colected2 = false, colected3 = false, colected4 = false, colected5 = false;
 let cursosESTG = 0;
 
 let inicio = true;
@@ -24,6 +22,8 @@ function preload() {
 	tunelTop = loadImage("data/Tunnel.png");
 	tunelDown = loadImage("data/Tunnel2.png");
 	logo = loadImage("data/logo.png");
+	botao = loadImage("data/botao.png");
+	icon = loadImage("data/smiley.png");
 }
 
 function setup() {
@@ -38,6 +38,12 @@ function setup() {
 
 	for (let i = 1; i < 25; i++) {
 		topY[i] = random(-540, -440);
+	}
+
+	for (let i = 1; i < 24; i++){
+		iconY[i] = random(100, 350);
+
+		collected[i] = true;
 	}
 }
 
@@ -117,8 +123,23 @@ function rectBall(rx, ry, rw, rh, bx, by, d) {
 function draw() {
 	if (inicio) {
 		background('grey');
+
+		tunelX = 320;
+		iconX = 170;
+
+		for (let i = 1; i < 24; i++){
+			iconY[i] = random(100, 350);
+	
+			collected[i] = true;
+		}
+
+		cursosESTG = 0;
+
 		imageMode(CORNER);
 		image(begin, 0, 0);
+		imageMode(CENTER);
+		image(botao, width/2, 330);
+
 	} else {
 		background('grey');
 
@@ -126,8 +147,6 @@ function draw() {
 		image(video, 0, 0);
 
 		iniciarMapa();
-
-		tunelX = tunelX - 2.5;
 
 		imageMode(CENTER);
 		image(bird, initialBirdX, noseY, 32, 32);
@@ -147,7 +166,7 @@ function draw() {
 }
 
 function mouseClicked() {
-	if (inicio) {
+	if ((mouseX >= width/2-105 && mouseX <= width/2+105 && mouseY >= 315 && mouseY <= 345) && inicio) {
 		inicio = !inicio;
 	}
 }
@@ -156,18 +175,28 @@ function mouseClicked() {
 /* -- Print dos tuneis -- */
 function iniciarMapa() {
 
-	/* -- Loop do número de tuneis a mostrar -- */
-	for (let i = 1; i < 25; i++) {
-		
-		/* -- Mostra cada tunel (cima e baixo) -- */
-		image(tunelTop, tunelX + (300 * i), topY[i]);
-		image(tunelDown, tunelX + (300 * i), (topY[i] + 790));
+	if (inicio == false) {
 
-		/* -- Invoca a função das colisões, com o devido i -- */
-		testarColisão(i);
+		/* -- Loop do número de tuneis a mostrar -- */
+		for (let i = 1; i < 25; i++) {
+
+			/* -- Mostra cada tunel (cima e baixo) -- */
+			image(tunelTop, tunelX + (300 * i), topY[i]);
+			image(tunelDown, tunelX + (300 * i), (topY[i] + 790));
+
+			if(collected[i]){
+				image(icon, iconX + (300 * i), (iconY[i]));
+			}
+
+			/* -- Invoca a função das colisões, com o devido i -- */
+			testarColisão(i);
+
+		}
+		
+		tunelX = tunelX - 2.5;
+		iconX = iconX - 2.5;
 
 	}
-
 }
 
 
@@ -176,13 +205,20 @@ function testarColisão(i) {
 
 	/* -- Testa colisão com o tunel de cima -- */
 	if ((initialBirdX + 16) > (tunelX + (300 * i)) && (initialBirdX - 16) < (tunelX + (300 * i) + 71) && (noseY + 16) > (topY[i]) && (noseY - 16) < (topY[i] + 640)) {
-		text("TOCOU", initialBirdX - 16, noseY - 32);
+		inicio = true;
 	}
 
 
 	/* -- Testa colisão com o tunel de baixo -- */
 	if ((initialBirdX + 16) > (tunelX + (300 * i)) && (initialBirdX - 16) < (tunelX + (300 * i) + 71) && (noseY + 16) > (topY[i] + 790) && (noseY - 16) < (topY[i] + 640 + 790)) {
-		text("TOCOU", initialBirdX - 16, noseY - 32);
+		inicio = true;
+	}
+
+	if ((initialBirdX + 16) > (iconX + (300 * i)) && (initialBirdX - 16) < (iconX + (300 * i) + 32) && (noseY + 16) > (iconY[i]) && (noseY - 16) < (iconY[i] + 32)) {
+		if(collected[i]){
+			cursosESTG++;
+		}
+		collected[i] = false;
 	}
 
 }
