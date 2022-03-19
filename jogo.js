@@ -27,7 +27,7 @@ let nivel = 0;
 
 /* Posição inicial do texto no rodapé */
 let textoX = 640;
-let textoY = 480 - 16;
+let textoY = 480 - 18;
 
 /* Variável para verificar se a webcam carregou */
 let carregou = false;
@@ -56,11 +56,14 @@ function preload() {
 	speedMax = loadImage("data/speedMax.png");
 	speedMed = loadImage("data/speedMed.png");
 	speedMin = loadImage("data/speedMin.png");
+	speedMaxOn = loadImage("data/speedMaxOn.png");
+	speedMedOn = loadImage("data/speedMedOn.png");
+	speedMinOn = loadImage("data/speedMinOn.png");
 
 
 	// -- Imagens para a barra de terminar o jogo e barra do jogo terminado
 	end = loadImage("data/endGame.png");
-	terminado = loadImage("data/Terminado.png");
+	terminado = loadImage("data/Terminado2.png");
 
 
 	// -- Simbolos de cada escola a cores e preto & branco
@@ -142,13 +145,29 @@ function draw() {
 		imageMode(CENTER);
 		image(botao, width / 2, 330);
 		image(conquistas, width / 2, 365);
+		
 		image(speedMin, width / 2 - 72, 400);
 		image(speedMed, width / 2, 400);
 		image(speedMax, width / 2 + 73, 400);
 
+		switch (dificuldade) {
+			case facil:
+				image(speedMinOn, width / 2 - 72, 400);
+				break;
+			case medio:
+				image(speedMedOn, width / 2, 400);
+				break;
+			case dificil:
+				image(speedMaxOn, width / 2 + 73, 400);
+				break;
+			default:
+				break;
+		}
+
 		textSize(16);
-		fill(255);
-		text("Trabalho realizado por: João Pires, Nelson Dias, Tiago Silva", textoX, textoY);
+		fill(48, 64, 43);
+		textFont(newFont);
+		text("Trabalho realizado por:		João Pires		Nelson Dias		Tiago Silva", textoX, textoY);
 		textoX = textoX - 1.5;
 
 		if (textoX + 480 < 0) {
@@ -164,13 +183,25 @@ function draw() {
 		}
 
 		if ((mouseX >= 215 && mouseX <= 280 && mouseY >= 385 && mouseY <= 415) && inicio) {
-			image(speedMin, width / 2 - 72, 400, 70, 35);
+			if (dificuldade == facil) {
+				image(speedMinOn, width / 2 - 72, 400, 70, 35);
+			} else {
+				image(speedMin, width / 2 - 72, 400, 70, 35);
+			}
 		}
 		if ((mouseX >= 285 && mouseX <= 350 && mouseY >= 385 && mouseY <= 415) && inicio) {
-			image(speedMed, width / 2, 400, 70, 35);
+			if (dificuldade == medio) {
+				image(speedMedOn, width / 2, 400, 70, 35);
+			} else {
+				image(speedMed, width / 2, 400, 70, 35);
+			}
 		}
 		if ((mouseX >= 360 && mouseX <= 425 && mouseY >= 385 && mouseY <= 415) && inicio) {
-			image(speedMax, width / 2 + 73, 400, 70, 35);
+			if (dificuldade == dificil) {
+				image(speedMaxOn, width / 2 + 73, 400, 70, 35);
+			} else {
+				image(speedMax, width / 2 + 73, 400, 70, 35);
+			}
 		}
 
 	} else if (conquista == false && inicio == false) {
@@ -273,57 +304,75 @@ function telaConquista() {
 		image(resetar, width - 52, 20, 36, 36);
 	}
 
-	fill(255);
+	textAlign(CENTER);
 	textFont(newFont);
 	textSize(24);
 
 	if (pontos.esdl == 1) {
 		image(esdlbadge, 130, 160, 91, 65)
-		text(`${pontos.esdl} / 1`, 155, 255);
+		fill(126, 226, 116);
+		text(`${pontos.esdl} / 1`, 175, 255);
 	} else {
 		image(esdlbadgeBW, 130, 160, 91, 65)
-		text(`${pontos.esdl} / 1`, 150, 255);
+		fill(132);
+		text(`${pontos.esdl} / 1`, 175, 255);
 	}
 
 	if (pontos.ess == 2) {
-		image(essbadge, 270, 160, 91, 65)
-		text(`${pontos.ess} / 2`, 295, 255);
+		image(essbadge,  width/2-45.5, 160, 91, 65)
+		fill(126, 226, 116);
+		text(`${pontos.ess} / 2`, width/2, 255);
 	} else {
-		image(essbadgeBW, 270, 160, 91, 65)
-		text(`${pontos.ess} / 2`, 290, 255);
+		image(essbadgeBW,  width/2-45.5, 160, 91, 65)
+		fill(132);
+		text(`${pontos.ess} / 2`, width/2, 255);
 	}
 
 	if (pontos.ese == 3) {
 		image(esebadge, 415, 160, 91, 65)
-		text(`${pontos.ese} / 3`, 435, 255);
+		fill(126, 226, 116);
+		text(`${pontos.ese} / 3`, 460, 255);
 	} else {
 		image(esebadgeBW, 415, 160, 91, 65)
-		text(`${pontos.ese} / 3`, 435, 255);
+		fill(132);
+		text(`${pontos.ese} / 3`, 460, 255);
 	}
 
 	if (pontos.esce == 4) {
 		image(escebadge, 130, 300, 91, 65)
-		text(`${pontos.esce} / 4`, 155, 395);
+		fill(126, 226, 116);
+		text(`${pontos.esce} / 4`, 175, 395);
 	} else {
 		image(escebadgeBW, 130, 300, 91, 65)
-		text(`${pontos.esce} / 4`, 150, 395);
+		fill(132);
+		text(`${pontos.esce} / 4`, 175, 395);
 	}
 
 	if (pontos.esa == 5) {
-		image(esabadge, 270, 300, 91, 65)
-		text(`${pontos.esa} / 5`, 295, 395);
+		image(esabadge, width/2-45.5, 300, 91, 65)
+		fill(126, 226, 116);
+		text(`${pontos.esa} / 5`, width/2, 395);
 	} else {
-		image(esabadgeBW, 270, 300, 91, 65)
-		text(`${pontos.esa} / 5`, 290, 395);
+		image(esabadgeBW, width/2-45.5, 300, 91, 65)
+		fill(132);
+		text(`${pontos.esa} / 5`, width/2, 395);
 	}
 
 	if (pontos.estg == 11) {
 		image(estgbadge, 415, 300, 91, 65)
-		text(`${pontos.estg} / 11`, 435, 395);
+		fill(126, 226, 116);
+		text(`${pontos.estg} / 11`, 460, 395);
 	} else {
 		image(estgbadgeBW, 415, 300, 91, 65)
-		text(`${pontos.estg} / 11`, 435, 395);
+		fill(132);
+		text(`${pontos.estg} / 11`, 460, 395);
 	}
+
+	textSize(20);
+	fill(55, 59, 54);
+	textFont(newFont)
+	textAlign(LEFT);
+	text("progresso dos niveis", 116, 135);
 }
 
 function mouseClicked() {
@@ -415,13 +464,14 @@ function mouseClicked() {
 	}
 
 	if ((mouseX >= 215 && mouseX <= 280 && mouseY >= 385 && mouseY <= 415) && inicio) {
-		dificuldade = 2.5;
+		dificuldade = facil;
 	}
 	if ((mouseX >= 285 && mouseX <= 350 && mouseY >= 385 && mouseY <= 415) && inicio) {
-		dificuldade = 4;
+		dificuldade = medio;
 	}
 	if ((mouseX >= 360 && mouseX <= 425 && mouseY >= 385 && mouseY <= 415) && inicio) {
-		dificuldade = 6;
+		dificuldade = dificil;
+
 	}
 }
 
@@ -453,6 +503,11 @@ function telaNiveis() {
 	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && niveis) {
 		image(voltar, 20, 20, 36, 36);
 	}
+	
+	textSize(20);
+	fill(55, 59, 54);
+	textFont(newFont)
+	text("escolha o nivel", 116, 135);
 }
 
 function nivelESDL() {
