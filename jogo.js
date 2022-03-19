@@ -15,15 +15,12 @@ let pontos = [estg = 0, ese = 0, esa = 0, esce = 0, esdl = 0, ess = 0];
 let inicio = true;
 let conquista = false;
 let niveis = false;
-let nivelUm = false;
-let nivelDois = false;
-let nivelTres = false;
-let nivelQuatro = false;
-let nivelCinco = false;
-let nivelSeis = false;
+let nivel = 0;
 
 let textoX = 640;
 let textoY = 480 - 16;
+
+let carregou = false;
 
 function preload() {
 	bird = loadImage("data/bird2.png");
@@ -68,7 +65,7 @@ function setup() {
 	video = createCapture(VIDEO);
 	video.hide();
 
-	poseNet = ml5.poseNet(video);
+	poseNet = ml5.poseNet(video, modelLoaded);
 
 	poseNet.on('pose', getPoses);
 
@@ -81,6 +78,10 @@ function setup() {
 
 		collected[i] = true;
 	}
+
+	collectSound = loadSound('sound/collect.wav');
+	hitSound = loadSound('sound/hit.wav');
+	endSound = loadSound('sound/end.wav');
 }
 
 function getPoses(poses) {
@@ -89,6 +90,10 @@ function getPoses(poses) {
 
 		noseY = lerp(noseY, nY, 0.5);
 	}
+}
+
+function modelLoaded() {
+	carregou = true;
 }
 
 function draw() {
@@ -104,10 +109,14 @@ function draw() {
 		image(botao, width / 2, 330);
 		image(conquistas, width / 2, 365);
 
-		textSize (16);
+		textSize(16);
 		fill(255);
 		text("Trabalho realizado por: João Pires, Nelson Dias, Tiago Silva", textoX, textoY);
 		textoX = textoX - 1.5;
+
+		if (textoX + 480 < 0) {
+			textoX = 640;
+		}
 
 		if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 315 && mouseY <= 345) && inicio) {
 			image(botao, width / 2, 330, 220, 35);
@@ -120,88 +129,33 @@ function draw() {
 	} else if (conquista == false && inicio == false) {
 		if (niveis) {
 			telaNiveis();
-			console.log("Tela de escolha de niveis, iniciada com sucesso.");
-		} else if (nivelUm) {
-			nivelESDL();
-			console.log("Nivel ESDL, iniciado com sucesso.");
-		} else if (nivelDois) {
-			nivelESS();
-			console.log("Nivel ESS, iniciado com sucesso.");
-		} else if (nivelTres) {
-			nivelESE();
-			console.log("Nivel ESE, iniciado com sucesso.");
-		} else if (nivelQuatro) {
-			nivelESCE();
-			console.log("Nivel ESCE, iniciado com sucesso.");
-		} else if (nivelCinco) {
-			nivelESA();
-			console.log(nivelCinco);
-			console.log("Nivel ESA, iniciado com sucesso.");
-		} else if (nivelSeis) {
-			nivelESTG();
-			console.log("Nivel ESTG, iniciado com sucesso.");
 		} else {
-			telaNiveis();
+
+			switch (nivel) {
+				case 1:
+					nivelESDL();
+					break;
+				case 2:
+					nivelESS();
+					break;
+				case 3:
+					nivelESE();
+					break;
+				case 4:
+					nivelESCE();
+					break;
+				case 5:
+					nivelESA();
+					break;
+				case 6:
+					nivelESTG();
+					break;
+				default:
+					break;
+			}
 		}
 	} else if (conquista && inicio == false) {
 		telaConquista();
-	}
-}
-
-function mouseClicked() {
-	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 350 && mouseY <= 380) && inicio) {
-		inicio = !inicio;
-		conquista = !conquista;
-	}
-
-	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && conquista) {
-		inicio = !inicio;
-		conquista = !conquista;
-	}
-
-
-	if (niveis) {
-
-		/* Botão de voltar atrás */
-		if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52)) {
-			inicio = !inicio;
-			niveis = !niveis;
-		}
-
-
-		/* Botões dos niveis */
-		if ((mouseX >= 115 && mouseX <= 240 && mouseY >= 150 && mouseY <= 270)) {
-			niveis = false;
-			nivelUm = true;
-		} else if ((mouseX >= 257 && mouseX <= 380 && mouseY >= 150 && mouseY <= 270)) {
-			niveis = false;
-			nivelDois = true;
-		} else if ((mouseX >= 400 && mouseX <= 520 && mouseY >= 150 && mouseY <= 270)) {
-			niveis = false;
-			nivelTres = true;
-		} else if ((mouseX >= 115 && mouseX <= 240 && mouseY >= 290 && mouseY <= 410)) {
-			niveis = false;
-			nivelQuatro = true;
-		} else if ((mouseX >= 257 && mouseX <= 380 && mouseY >= 290 && mouseY <= 410)) {
-			niveis = false;
-			nivelCinco = true;
-		} else if ((mouseX >= 400 && mouseX <= 520 && mouseY >= 290 && mouseY <= 410)) {
-			niveis = false;
-			nivelSeis = true;
-		}
-	}
-
-	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 315 && mouseY <= 345) && inicio) {
-		for (let i = 1; i < 24; i++) {
-			iconY[i] = random(100, 350);
-
-			collected[i] = true;
-		}
-
-		pontos.estg = 0;
-
-		inicio = !inicio;
-		niveis = !niveis;
 	}
 }
 
@@ -209,34 +163,46 @@ function testarColisão(i) {
 
 	/* -- Testa colisão com o tunel de cima -- */
 	if ((initialBirdX + 16) > (tunelX + (300 * i)) && (initialBirdX - 16) < (tunelX + (300 * i) + 71) && (noseY + 16) > (topY[i]) && (noseY - 16) < (topY[i] + 640)) {
+		hitSound.play();
 		inicio = true;
 	}
 
 
 	/* -- Testa colisão com o tunel de baixo -- */
 	if ((initialBirdX + 16) > (tunelX + (300 * i)) && (initialBirdX - 16) < (tunelX + (300 * i) + 71) && (noseY + 16) > (topY[i] + 790) && (noseY - 16) < (topY[i] + 640 + 790)) {
+		hitSound.play();
 		inicio = true;
 	}
 
-	if ((initialBirdX + 16) > (iconX + (300 * i)) && (initialBirdX - 16) < (iconX + (300 * i) + 32) && (noseY + 16) > (iconY[i]) && (noseY - 16) < (iconY[i] + 32)) {
+	if ((initialBirdX + 16) > (iconX + (300 * i)) && (initialBirdX - 16) < (iconX + (300 * i) + 57) && (noseY + 16) > (iconY[i]) && (noseY - 16) < (iconY[i] + 40.6)) {
 		if (collected[i]) {
-			if (nivelUm) {
-				pontos.esdl++;
-			}
-			if (nivelDois) {
-				pontos.ess++;
-			}
-			if (nivelTres) {
-				pontos.ese++;
-			}
-			if (nivelQuatro) {
-				pontos.esce++;
-			}
-			if (nivelCinco) {
-				pontos.esa++;
-			}
-			if (nivelSeis) {
-				pontos.estg++;
+			switch (nivel) {
+				case 1:
+					collectSound.play();
+					pontos.esdl++;
+					break;
+				case 2:
+					collectSound.play();
+					pontos.ess++;
+					break;
+				case 3:
+					collectSound.play();
+					pontos.ese++;
+					break;
+				case 4:
+					collectSound.play();
+					pontos.esce++;
+					break;
+				case 5:
+					collectSound.play();
+					pontos.esa++;
+					break;
+				case 6:
+					collectSound.play();
+					pontos.estg++;
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -255,23 +221,27 @@ function telaConquista() {
 		image(voltar, 20, 20, 36, 36);
 	}
 
-	if (pontos.esdl == null) {
-		pontos.esdl = 0;
-	}
-	if (pontos.ess == null) {
-		pontos.ess = 0;
-	}
-	if (pontos.ese == null) {
-		pontos.ese = 0;
-	}
-	if (pontos.esce == null) {
-		pontos.esce = 0;
-	}
-	if (pontos.esa == null) {
-		pontos.esa = 0;
-	}
-	if (pontos.estg == null) {
-		pontos.estg = 0;
+	switch (null || undefined) {
+		case pontos.esdl:
+			pontos.esdl = 0;
+			break;
+		case pontos.ess:
+			pontos.ess = 0;
+			break;
+		case pontos.ese:
+			pontos.ese = 0;
+			break;
+		case pontos.esce:
+			pontos.esce = 0;
+			break;
+		case pontos.esa:
+			pontos.esa = 0;
+			break;
+		case pontos.estg:
+			pontos.estg = 0;
+			break;
+		default:
+			break;
 	}
 
 	fill(255);
@@ -327,6 +297,81 @@ function telaConquista() {
 	}
 }
 
+function mouseClicked() {
+	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 350 && mouseY <= 380) && inicio) {
+		inicio = !inicio;
+		conquista = !conquista;
+	}
+
+	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && conquista) {
+		inicio = !inicio;
+		conquista = !conquista;
+	}
+
+
+	if (niveis) {
+
+		/* Botão de voltar atrás */
+		if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52)) {
+			inicio = !inicio;
+			niveis = !niveis;
+		}
+
+
+		/* Botões dos niveis */
+		if ((mouseX >= 115 && mouseX <= 240 && mouseY >= 150 && mouseY <= 270)) {
+			if (pontos.esdl != 1) {
+				pontos.esdl = 0;
+				niveis = false;
+				nivel = 1;
+			}
+		} else if ((mouseX >= 257 && mouseX <= 380 && mouseY >= 150 && mouseY <= 270)) {
+			if (pontos.ess != 2) {
+				pontos.ess = 0;
+				niveis = false;
+				nivel = 2;
+			}
+		} else if ((mouseX >= 400 && mouseX <= 520 && mouseY >= 150 && mouseY <= 270)) {
+			if (pontos.ese != 3) {
+				pontos.ese = 0;
+				niveis = false;
+				nivel = 3;
+			}
+		} else if ((mouseX >= 115 && mouseX <= 240 && mouseY >= 290 && mouseY <= 410)) {
+			if (pontos.esce != 4) {
+				pontos.esce = 0;
+				niveis = false;
+				nivel = 4;
+			}
+		} else if ((mouseX >= 257 && mouseX <= 380 && mouseY >= 290 && mouseY <= 410)) {
+			if (pontos.esa != 5) {
+				pontos.esa = 0;
+				niveis = false;
+				nivel = 5;
+			}
+		} else if ((mouseX >= 400 && mouseX <= 520 && mouseY >= 290 && mouseY <= 410)) {
+			if (pontos.estg != 11) {
+				pontos.estg = 0;
+				niveis = false;
+				nivel = 6;
+			}
+		}
+	}
+
+	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 315 && mouseY <= 345) && inicio) {
+		for (let i = 1; i < 24; i++) {
+			iconY[i] = random(100, 350);
+
+			collected[i] = true;
+		}
+
+		pontos.estg = 0;
+
+		inicio = !inicio;
+		niveis = !niveis;
+	}
+}
+
 function telaNiveis() {
 	background('grey');
 	imageMode(CORNER);
@@ -339,346 +384,121 @@ function telaNiveis() {
 }
 
 function nivelESDL() {
-	background('grey');
+	background('white');
 
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.esdl == null) {
+	if (pontos.esdl == undefined) {
 		pontos.esdl = 0;
 	}
 
-	if (inicio == false && nivelUm) {
+	tunelX = tunelX - 2.5;
+	iconX = iconX - 2.5;
 
-		/* -- Loop do número de tuneis a mostrar -- */
-		for (let i = 1; i < 2; i++) {
+	const nivel = new Nivel(1, tunelX, topY, iconX, iconY, esdlbadge, pontos.esdl);
 
-			/* -- Mostra cada tunel (cima e baixo) -- */
-			image(tunelTop, tunelX + (300 * i), topY[i]);
-			image(tunelDown, tunelX + (300 * i), (topY[i] + 790));
-			if (i == 1) {
-				image(end, tunelX + 300 + 300 * i, 0, 108, 480);
-			}
-			if ((initialBirdX + 16) > (tunelX + (300 * 2 * i)) && (initialBirdX - 16) < (tunelX + (300 * 2 * i) + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
-				nivelUm = false;
-				inicio = true;
-			}
-
-			if (collected[i]) {
-				image(esdlbadge, iconX + (300 * i), (iconY[i]), 32, 32);
-			}
-
-			/* -- Invoca a função das colisões, com o devido i -- */
-			testarColisão(i);
-
-		}
-
-		tunelX = tunelX - 2.5;
-		iconX = iconX - 2.5;
-
-	}
-
-	imageMode(CENTER);
-	image(bird, initialBirdX, noseY, 32, 32);
-
-	imageMode(CORNER);
-	image(logo, 25, 25, 120, 60);
-
-	imageMode(CENTER);
-	fill(55, 59, 54);
-	noStroke();
-	ellipse(width / 2, 55, 50, 50);
-	fill(255);
-	textSize(32);
-	textFont(newFont);
-	text(`${pontos.esdl}`, width / 2 - 8, 65);
+	nivel.show();
+	nivel.passaro();
+	nivel.extras();
 }
 
 function nivelESS() {
-	background('grey');
+	background('white');
 
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.ess == null) {
+	if (pontos.ess == undefined) {
 		pontos.ess = 0;
 	}
 
-	if (inicio == false && nivelDois) {
+	tunelX = tunelX - 2.5;
+	iconX = iconX - 2.5;
 
-		/* -- Loop do número de tuneis a mostrar -- */
-		for (let i = 1; i < 3; i++) {
+	const nivel = new Nivel(2, tunelX, topY, iconX, iconY, essbadge, pontos.ess);
 
-			/* -- Mostra cada tunel (cima e baixo) -- */
-			image(tunelTop, tunelX + (300 * i), topY[i]);
-			image(tunelDown, tunelX + (300 * i), (topY[i] + 790));
-			if (i == 2) {
-				image(end, tunelX + 300 + 300 * i, 0, 108, 480);
-
-				if ((initialBirdX + 16) > (tunelX + + 300 + 300 * i) && (initialBirdX - 16) < (tunelX + 300 + 300 * i + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
-					nivelDois = false;
-					inicio = true;
-				}
-			}
-
-			if (collected[i]) {
-				image(essbadge, iconX + (300 * i), (iconY[i]), 32, 32);
-			}
-
-			/* -- Invoca a função das colisões, com o devido i -- */
-			testarColisão(i);
-
-		}
-
-		tunelX = tunelX - 2.5;
-		iconX = iconX - 2.5;
-
-	}
-
-	imageMode(CENTER);
-	image(bird, initialBirdX, noseY, 32, 32);
-
-	imageMode(CORNER);
-	image(logo, 25, 25, 120, 60);
-
-	imageMode(CENTER);
-	fill(55, 59, 54);
-	noStroke();
-	ellipse(width / 2, 55, 50, 50);
-	fill(255);
-	textSize(32);
-	textFont(newFont);
-	text(`${pontos.ess}`, width / 2 - 8, 65);
+	nivel.show();
+	nivel.passaro();
+	nivel.extras();
 }
 
 function nivelESE() {
-	background('grey');
+	background('white');
 
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.ese == null) {
+	if (pontos.ese == undefined) {
 		pontos.ese = 0;
 	}
 
-	if (inicio == false && nivelTres) {
+	tunelX = tunelX - 2.5;
+	iconX = iconX - 2.5;
 
-		/* -- Loop do número de tuneis a mostrar -- */
-		for (let i = 1; i < 4; i++) {
+	const nivel = new Nivel(3, tunelX, topY, iconX, iconY, esebadge, pontos.ese);
 
-			/* -- Mostra cada tunel (cima e baixo) -- */
-			image(tunelTop, tunelX + (300 * i), topY[i]);
-			image(tunelDown, tunelX + (300 * i), (topY[i] + 790));
-			if (i == 3) {
-				image(end, tunelX + 300 + 300 * i, 0, 108, 480);
-
-				if ((initialBirdX + 16) > (tunelX + + 300 + 300 * i) && (initialBirdX - 16) < (tunelX + 300 + 300 * i + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
-					nivelTres = false;
-					inicio = true;
-				}
-			}
-
-			if (collected[i]) {
-				image(esebadge, iconX + (300 * i), (iconY[i]), 32, 32);
-			}
-
-			/* -- Invoca a função das colisões, com o devido i -- */
-			testarColisão(i);
-
-		}
-
-		tunelX = tunelX - 2.5;
-		iconX = iconX - 2.5;
-
-	}
-
-	imageMode(CENTER);
-	image(bird, initialBirdX, noseY, 32, 32);
-
-	imageMode(CORNER);
-	image(logo, 25, 25, 120, 60);
-
-	imageMode(CENTER);
-	fill(55, 59, 54);
-	noStroke();
-	ellipse(width / 2, 55, 50, 50);
-	fill(255);
-	textSize(32);
-	textFont(newFont);
-	text(`${pontos.ese}`, width / 2 - 8, 65);
+	nivel.show();
+	nivel.passaro();
+	nivel.extras();
 }
 
 function nivelESCE() {
-	background('grey');
+	background('white');
 
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.esce == null) {
+	if (pontos.esce == undefined) {
 		pontos.esce = 0;
 	}
 
-	if (inicio == false) {
+	tunelX = tunelX - 2.5;
+	iconX = iconX - 2.5;
 
-		/* -- Loop do número de tuneis a mostrar -- */
-		for (let i = 1; i < 5; i++) {
+	const nivel = new Nivel(4, tunelX, topY, iconX, iconY, escebadge, pontos.esce);
 
-			/* -- Mostra cada tunel (cima e baixo) -- */
-			image(tunelTop, tunelX + (300 * i), topY[i]);
-			image(tunelDown, tunelX + (300 * i), (topY[i] + 790));
-			if (i == 4) {
-				image(end, tunelX + 300 + 300 * i, 0, 108, 480);
-
-				if ((initialBirdX + 16) > (tunelX + + 300 + (300 * i)) && (initialBirdX - 16) < (tunelX + 300 + 300 * i + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
-					nivelQuatro = false;
-					inicio = true;
-				}
-			}
-
-			if (collected[i]) {
-				image(escebadge, iconX + (300 * i), (iconY[i]), 32, 32);
-			}
-
-			/* -- Invoca a função das colisões, com o devido i -- */
-			testarColisão(i);
-
-		}
-
-		tunelX = tunelX - 2.5;
-		iconX = iconX - 2.5;
-
-	}
-
-	imageMode(CENTER);
-	image(bird, initialBirdX, noseY, 32, 32);
-
-	imageMode(CORNER);
-	image(logo, 25, 25, 120, 60);
-
-	imageMode(CENTER);
-	fill(55, 59, 54);
-	noStroke();
-	ellipse(width / 2, 55, 50, 50);
-	fill(255);
-	textSize(32);
-	textFont(newFont);
-	text(`${pontos.esce}`, width / 2 - 8, 65);
+	nivel.show();
+	nivel.passaro();
+	nivel.extras();
 }
 
 function nivelESA() {
-	background('grey');
+	background('white');
 
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.esa == null) {
+	if (pontos.esa == undefined) {
 		pontos.esa = 0;
 	}
 
-	if (inicio == false) {
+	tunelX = tunelX - 2.5;
+	iconX = iconX - 2.5;
 
-		/* -- Loop do número de tuneis a mostrar -- */
-		for (let i = 1; i < 6; i++) {
+	const nivel = new Nivel(5, tunelX, topY, iconX, iconY, esabadge, pontos.esa);
 
-			/* -- Mostra cada tunel (cima e baixo) -- */
-			image(tunelTop, tunelX + (300 * i), topY[i]);
-			image(tunelDown, tunelX + (300 * i), (topY[i] + 790));
-
-
-			if (i == 5) {
-				image(end, tunelX + 300 + 300 * i, 0, 108, 480);
-
-				if ((initialBirdX + 16) > (tunelX + + 300 + 300 * i) && (initialBirdX - 16) < (tunelX + 300 + 300 * i + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
-					nivelCinco = false;
-					inicio = true;
-				}
-			}
-
-			if (collected[i]) {
-				image(esabadge, iconX + (300 * i), (iconY[i]), 32, 32);
-			}
-
-			/* -- Invoca a função das colisões, com o devido i -- */
-			testarColisão(i);
-
-		}
-
-		tunelX = tunelX - 2.5;
-		iconX = iconX - 2.5;
-
-	}
-
-	imageMode(CENTER);
-	image(bird, initialBirdX, noseY, 32, 32);
-
-	imageMode(CORNER);
-	image(logo, 25, 25, 120, 60);
-
-	imageMode(CENTER);
-	fill(55, 59, 54);
-	noStroke();
-	ellipse(width / 2, 55, 50, 50);
-	fill(255);
-	textSize(32);
-	textFont(newFont);
-	text(`${pontos.esa}`, width / 2 - 8, 65);
+	nivel.show();
+	nivel.passaro();
+	nivel.extras();
 }
 
 function nivelESTG() {
-	background('grey');
+	background('white');
 
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.estg == null) {
+	if (pontos.estg == undefined) {
 		pontos.estg = 0;
 	}
 
-	if (inicio == false) {
+	tunelX = tunelX - 2.5;
+	iconX = iconX - 2.5;
 
-		/* -- Loop do número de tuneis a mostrar -- */
-		for (let i = 1; i < 12; i++) {
+	const nivel = new Nivel(11, tunelX, topY, iconX, iconY, estgbadge, pontos.estg);
 
-			/* -- Mostra cada tunel (cima e baixo) -- */
-			image(tunelTop, tunelX + (300 * i), topY[i]);
-			image(tunelDown, tunelX + (300 * i), (topY[i] + 790));
-
-
-			if (i == 11) {
-				image(end, tunelX + 300 + 300 * i, 0, 108, 480);
-
-				if ((initialBirdX + 16) > (tunelX + + 300 + 300 * i) && (initialBirdX - 16) < (tunelX + 300 + 300 * i + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
-					nivelCinco = false;
-					inicio = true;
-				}
-			}
-
-			if (collected[i]) {
-				image(estgbadge, iconX + (300 * i), (iconY[i]), 32, 32);
-			}
-
-			/* -- Invoca a função das colisões, com o devido i -- */
-			testarColisão(i);
-
-		}
-
-		tunelX = tunelX - 2.5;
-		iconX = iconX - 2.5;
-
-	}
-
-	imageMode(CENTER);
-	image(bird, initialBirdX, noseY, 32, 32);
-
-	imageMode(CORNER);
-	image(logo, 25, 25, 120, 60);
-
-	imageMode(CENTER);
-	fill(55, 59, 54);
-	noStroke();
-	ellipse(width / 2, 55, 50, 50);
-	fill(255);
-	textSize(32);
-	textFont(newFont);
-	text(`${pontos.estg}`, width / 2 - 8, 65);
+	nivel.show();
+	nivel.passaro();
+	nivel.extras();
 }
