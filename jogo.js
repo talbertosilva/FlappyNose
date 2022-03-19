@@ -2,63 +2,107 @@ var x, y, topY = [], iconY = [], collected = [];
 
 let video;
 
-let noseX = 0;
 let noseY = 0;
 
 let initialBirdX = 100;
 
+/* Posição no eixo dos X dos tuneis e dos colectáveis */
 let tunelX;
 let iconX;
 
-let pontos = [estg = 0, ese = 0, esa = 0, esce = 0, esdl = 0, ess = 0];
+/* Pontos iniciais de cada nível */
+let pontos = { estg: 0, ese: 0, esa: 0, esce: 0, esdl: 0, ess: 0 };
 
+/* Tela do inicio, caso seja true esta será mostrada, caso contrário não irá aparecer no ecrã */
 let inicio = true;
+
+/* Tela das conquistas, caso seja true esta será mostrada, caso contrário não irá aparecer no ecrã */
 let conquista = false;
+
+/* Tela da escolha dos niveis, caso seja true esta será mostrada, caso contrário não irá aparecer no ecrã */
 let niveis = false;
+
+/* Nível, caso seja =1, aparecerá no ecrã o nível 1, caso seja =2, aparecerá o nível 2, e por ai adiante... */
 let nivel = 0;
 
+/* Posição inicial do texto no rodapé */
 let textoX = 640;
 let textoY = 480 - 16;
 
+/* Variável para verificar se a webcam carregou */
 let carregou = false;
 
+/* Variável que define a velocidade do jogo */
+let facil = 2.5, medio = 4, dificil = 6;
+let dificuldade = facil;
+
+/* Função para carregar os diversos assets */
 function preload() {
+
+	// -- Imagem do pássaro
 	bird = loadImage("data/bird2.png");
+
+
+	// -- Tipo de letra utilizada no jogo
 	newFont = loadFont('fonts/robotCrush.ttf');
+
+
+	// -- Imagens para os diversos ecrãs no decorrer do jogo
 	begin = loadImage("data/WallpaperBegin.png");
 	conquistasIMG = loadImage("data/WallpaperConquistas.png");
 	niveisIMG = loadImage("data/WallpaperNiveis.png");
-	end = loadImage("data/endGame.png");
 
-	/* -- Badges das escolas -- */
+	// -- Dificuldade do jogo
+	speedMax = loadImage("data/speedMax.png");
+	speedMed = loadImage("data/speedMed.png");
+	speedMin = loadImage("data/speedMin.png");
+
+
+	// -- Imagens para a barra de terminar o jogo e barra do jogo terminado
+	end = loadImage("data/endGame.png");
+	terminado = loadImage("data/Terminado.png");
+
+
+	// -- Simbolos de cada escola a cores e preto & branco
+	// -- Uma alterativa seria aplicar um fitro preto & branco a cada imagem a cores
+	// ESTG
 	estgbadge = loadImage("data/estgbadge.png");
 	estgbadgeBW = loadImage("data/estgbadgeBW.png");
-
+	// ESA
 	esabadge = loadImage("data/esabadge.png");
 	esabadgeBW = loadImage("data/esabadgeBW.png");
-
+	// ESCE
 	escebadge = loadImage("data/escebadge.png");
 	escebadgeBW = loadImage("data/escebadgeBW.png");
-
+	// ESDL
 	esdlbadge = loadImage("data/esdlbadge.png");
 	esdlbadgeBW = loadImage("data/esdlbadgeBW.png");
-
+	// ESE
 	esebadge = loadImage("data/esebadge.png");
 	esebadgeBW = loadImage("data/esebadgeBW.png");
-
+	// ESS
 	essbadge = loadImage("data/essbadge.png");
 	essbadgeBW = loadImage("data/essbadgeBW.png");
 
 
+	// -- Imagem dos túneis
+	// -- Uma alternativa seria fazer rotação de cada imagem 
 	tunelTop = loadImage("data/Tunnel.png");
 	tunelDown = loadImage("data/Tunnel2.png");
+
+
+	// -- Logotipo do jogo
 	logo = loadImage("data/logo.png");
+
+
+	// -- Botões
 	botao = loadImage("data/botao.png");
 	conquistas = loadImage("data/conquistas.png");
 	voltar = loadImage("data/voltar.png");
-	icon = loadImage("data/smiley.png");
+	resetar = loadImage("data/resetar.png");
 }
 
+/* Função para preparação do ambiente do jogo */
 function setup() {
 	createCanvas(640, 480);
 
@@ -69,16 +113,6 @@ function setup() {
 
 	poseNet.on('pose', getPoses);
 
-	for (let i = 1; i < 12; i++) {
-		topY[i] = random(-540, -440);
-	}
-
-	for (let i = 1; i < 12; i++) {
-		iconY[i] = random(100, 350);
-
-		collected[i] = true;
-	}
-
 	collectSound = loadSound('sound/collect.wav');
 	hitSound = loadSound('sound/hit.wav');
 	endSound = loadSound('sound/end.wav');
@@ -88,7 +122,7 @@ function getPoses(poses) {
 	if (poses.length > 0) {
 		let nY = poses[0].pose.keypoints[0].position.y;
 
-		noseY = lerp(noseY, nY, 0.5);
+		noseY = lerp(noseY, nY, 0.7);
 	}
 }
 
@@ -101,13 +135,16 @@ function draw() {
 		background('grey');
 
 		tunelX = 320;
-		iconX = 470;
+		iconX = 480;
 
 		imageMode(CORNER);
 		image(begin, 0, 0);
 		imageMode(CENTER);
 		image(botao, width / 2, 330);
 		image(conquistas, width / 2, 365);
+		image(speedMin, width / 2 - 72, 400);
+		image(speedMed, width / 2, 400);
+		image(speedMax, width / 2 + 73, 400);
 
 		textSize(16);
 		fill(255);
@@ -124,6 +161,16 @@ function draw() {
 
 		if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 350 && mouseY <= 380) && inicio) {
 			image(conquistas, width / 2, 365, 220, 35);
+		}
+
+		if ((mouseX >= 215 && mouseX <= 280 && mouseY >= 385 && mouseY <= 415) && inicio) {
+			image(speedMin, width / 2 - 72, 400, 70, 35);
+		}
+		if ((mouseX >= 285 && mouseX <= 350 && mouseY >= 385 && mouseY <= 415) && inicio) {
+			image(speedMed, width / 2, 400, 70, 35);
+		}
+		if ((mouseX >= 360 && mouseX <= 425 && mouseY >= 385 && mouseY <= 415) && inicio) {
+			image(speedMax, width / 2 + 73, 400, 70, 35);
 		}
 
 	} else if (conquista == false && inicio == false) {
@@ -216,32 +263,14 @@ function telaConquista() {
 	imageMode(CORNER);
 	image(conquistasIMG, 0, 0);
 	image(voltar, 20, 20);
+	image(resetar, width - 52, 20);
 
 	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && conquista) {
 		image(voltar, 20, 20, 36, 36);
 	}
 
-	switch (null || undefined) {
-		case pontos.esdl:
-			pontos.esdl = 0;
-			break;
-		case pontos.ess:
-			pontos.ess = 0;
-			break;
-		case pontos.ese:
-			pontos.ese = 0;
-			break;
-		case pontos.esce:
-			pontos.esce = 0;
-			break;
-		case pontos.esa:
-			pontos.esa = 0;
-			break;
-		case pontos.estg:
-			pontos.estg = 0;
-			break;
-		default:
-			break;
+	if ((mouseX >= (width - 52) && mouseX <= (width - 20) && mouseY >= 20 && mouseY <= 52) && conquista) {
+		image(resetar, width - 52, 20, 36, 36);
 	}
 
 	fill(255);
@@ -303,9 +332,18 @@ function mouseClicked() {
 		conquista = !conquista;
 	}
 
+
 	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && conquista) {
 		inicio = !inicio;
 		conquista = !conquista;
+	}
+	if ((mouseX >= (width - 52) && mouseX <= (width - 20) && mouseY >= 20 && mouseY <= 52) && conquista) {
+		pontos.esa = 0;
+		pontos.estg = 0;
+		pontos.esce = 0;
+		pontos.esdl = 0;
+		pontos.ese = 0;
+		pontos.ess = 0;
 	}
 
 
@@ -359,16 +397,31 @@ function mouseClicked() {
 	}
 
 	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 315 && mouseY <= 345) && inicio) {
-		for (let i = 1; i < 24; i++) {
+		/* 	Como não haverá mais do que 12 tuneis / simbolos,
+		é feito um random para 12 posições possíveis,
+		e apenas apresentado as necessárias,
+		por exemplo num nível de 5 tuneis, será apenas utilizado 5 randoms */
+		for (let i = 1; i < 12; i++) {
+			topY[i] = random(-540, -440);
+		}
+		for (let i = 1; i < 12; i++) {
 			iconY[i] = random(100, 350);
 
 			collected[i] = true;
 		}
 
-		pontos.estg = 0;
-
 		inicio = !inicio;
 		niveis = !niveis;
+	}
+
+	if ((mouseX >= 215 && mouseX <= 280 && mouseY >= 385 && mouseY <= 415) && inicio) {
+		dificuldade = 2.5;
+	}
+	if ((mouseX >= 285 && mouseX <= 350 && mouseY >= 385 && mouseY <= 415) && inicio) {
+		dificuldade = 4;
+	}
+	if ((mouseX >= 360 && mouseX <= 425 && mouseY >= 385 && mouseY <= 415) && inicio) {
+		dificuldade = 6;
 	}
 }
 
@@ -377,6 +430,25 @@ function telaNiveis() {
 	imageMode(CORNER);
 	image(niveisIMG, 0, 0);
 	image(voltar, 20, 20);
+
+	if (pontos.esdl == 1) {
+		image(terminado, 118, 150)
+	}
+	if (pontos.ess == 2) {
+		image(terminado, 260, 150)
+	}
+	if (pontos.ese == 3) {
+		image(terminado, 401, 150)
+	}
+	if (pontos.esce == 4) {
+		image(terminado, 118, 292)
+	}
+	if (pontos.esa == 5) {
+		image(terminado, 260, 292)
+	}
+	if (pontos.estg == 11) {
+		image(terminado, 401, 292)
+	}
 
 	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && niveis) {
 		image(voltar, 20, 20, 36, 36);
@@ -389,12 +461,8 @@ function nivelESDL() {
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.esdl == undefined) {
-		pontos.esdl = 0;
-	}
-
-	tunelX = tunelX - 2.5;
-	iconX = iconX - 2.5;
+	tunelX = tunelX - 1 * dificuldade;
+	iconX = iconX - 1 * dificuldade;
 
 	const nivel = new Nivel(1, tunelX, topY, iconX, iconY, esdlbadge, pontos.esdl);
 
@@ -409,12 +477,8 @@ function nivelESS() {
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.ess == undefined) {
-		pontos.ess = 0;
-	}
-
-	tunelX = tunelX - 2.5;
-	iconX = iconX - 2.5;
+	tunelX = tunelX - 1 * dificuldade;
+	iconX = iconX - 1 * dificuldade;
 
 	const nivel = new Nivel(2, tunelX, topY, iconX, iconY, essbadge, pontos.ess);
 
@@ -429,12 +493,8 @@ function nivelESE() {
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.ese == undefined) {
-		pontos.ese = 0;
-	}
-
-	tunelX = tunelX - 2.5;
-	iconX = iconX - 2.5;
+	tunelX = tunelX - 1 * dificuldade;
+	iconX = iconX - 1 * dificuldade;
 
 	const nivel = new Nivel(3, tunelX, topY, iconX, iconY, esebadge, pontos.ese);
 
@@ -449,12 +509,8 @@ function nivelESCE() {
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.esce == undefined) {
-		pontos.esce = 0;
-	}
-
-	tunelX = tunelX - 2.5;
-	iconX = iconX - 2.5;
+	tunelX = tunelX - 1 * dificuldade;
+	iconX = iconX - 1 * dificuldade;
 
 	const nivel = new Nivel(4, tunelX, topY, iconX, iconY, escebadge, pontos.esce);
 
@@ -469,12 +525,8 @@ function nivelESA() {
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.esa == undefined) {
-		pontos.esa = 0;
-	}
-
-	tunelX = tunelX - 2.5;
-	iconX = iconX - 2.5;
+	tunelX = tunelX - 1 * dificuldade;
+	iconX = iconX - 1 * dificuldade;
 
 	const nivel = new Nivel(5, tunelX, topY, iconX, iconY, esabadge, pontos.esa);
 
@@ -489,12 +541,8 @@ function nivelESTG() {
 	imageMode(CORNER);
 	image(video, 0, 0);
 
-	if (pontos.estg == undefined) {
-		pontos.estg = 0;
-	}
-
-	tunelX = tunelX - 2.5;
-	iconX = iconX - 2.5;
+	tunelX = tunelX - 1 * dificuldade;
+	iconX = iconX - 1 * dificuldade;
 
 	const nivel = new Nivel(11, tunelX, topY, iconX, iconY, estgbadge, pontos.estg);
 
