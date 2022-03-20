@@ -40,10 +40,10 @@ class Nivel {
 		}
 	}
 
-	passaro() {
+	passaro(passaro) {
 		if (carregou) {
 			imageMode(CENTER);
-			image(bird, initialBirdX, noseY, 32, 32);
+			image(passaro, initialBirdX, noseY, 32, 32);
 		}
 	}
 

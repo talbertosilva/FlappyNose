@@ -12,6 +12,7 @@ let iconX;
 
 /* Pontos iniciais de cada nível */
 let pontos = { estg: 0, ese: 0, esa: 0, esce: 0, esdl: 0, ess: 0 };
+let pontosTotal = 0;
 
 /* Tela do inicio, caso seja true esta será mostrada, caso contrário não irá aparecer no ecrã */
 let inicio = true;
@@ -35,12 +36,25 @@ let carregou = false;
 /* Variável que define a velocidade do jogo */
 let facil = 2.5, medio = 4, dificil = 6;
 let dificuldade = facil;
+let passaroCor = "vermelho";
 
 /* Função para carregar os diversos assets */
 function preload() {
 
 	// -- Imagem do pássaro
-	bird = loadImage("data/bird2.png");
+	birdAzul = loadImage("data/birdAzul.png");
+	birdAmarelo = loadImage("data/birdAmarelo.png");
+	birdVermelho = loadImage("data/birdVermelho.png");
+
+	botaoVermelho = loadImage("data/vermelho/botaoVermelho.png");
+	botaoVermelhoOn = loadImage("data/vermelho/botaoVermelhoOn.png");
+	botaoVermelhoLock = loadImage("data/vermelho/botaoVermelhoLock.png");
+	botaoAmarelo = loadImage("data/amarelo/botaoAmarelo.png");
+	botaoAmareloOn = loadImage("data/amarelo/botaoAmareloOn.png");
+	botaoAmareloLock = loadImage("data/amarelo/botaoAmareloLock.png");
+	botaoAzul = loadImage("data/azul/botaoAzul.png");
+	botaoAzulOn = loadImage("data/azul/botaoAzulOn.png");
+	botaoAzulLock = loadImage("data/azul/botaoAzulLock.png");
 
 
 	// -- Tipo de letra utilizada no jogo
@@ -134,6 +148,7 @@ function modelLoaded() {
 }
 
 function draw() {
+	pontosTotal = pontos.estg + pontos.ese + pontos.esa + pontos.esce + pontos.esdl + pontos.ess;
 	if (inicio) {
 		background('grey');
 
@@ -143,22 +158,47 @@ function draw() {
 		imageMode(CORNER);
 		image(begin, 0, 0);
 		imageMode(CENTER);
-		image(botao, width / 2, 330);
-		image(conquistas, width / 2, 365);
+		image(botao, width / 2, 300);
+		image(conquistas, width / 2, 335);
 		
-		image(speedMin, width / 2 - 72, 400);
-		image(speedMed, width / 2, 400);
-		image(speedMax, width / 2 + 73, 400);
+		image(speedMin, width / 2 - 72, 405);
+		image(speedMed, width / 2, 405);
+		image(speedMax, width / 2 + 73, 405);
+
+		image(botaoVermelho, width / 2 - 72, 370);
+		image(botaoAmareloLock, width / 2, 370);
+		image(botaoAzulLock, width / 2 + 73, 370);
 
 		switch (dificuldade) {
 			case facil:
-				image(speedMinOn, width / 2 - 72, 400);
+				image(speedMinOn, width / 2 - 72, 405);
 				break;
 			case medio:
-				image(speedMedOn, width / 2, 400);
+				image(speedMedOn, width / 2, 405);
 				break;
 			case dificil:
-				image(speedMaxOn, width / 2 + 73, 400);
+				image(speedMaxOn, width / 2 + 73, 405);
+				break;
+			default:
+				break;
+		}
+
+		if(pontosTotal >= 4) {
+			image(botaoAmarelo, width / 2, 370);
+		}
+		if(pontosTotal >= 15) {
+			image(botaoAzul, width / 2 + 73, 370);
+		}
+
+		switch (passaroCor) {
+			case "vermelho":
+				image(botaoVermelhoOn, width / 2 - 72, 370);
+				break;
+			case "amarelo":
+				image(botaoAmareloOn, width / 2, 370);
+				break;
+			case "azul":
+				image(botaoAzulOn, width / 2 + 73, 370);
 				break;
 			default:
 				break;
@@ -174,33 +214,55 @@ function draw() {
 			textoX = 640;
 		}
 
-		if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 315 && mouseY <= 345) && inicio) {
-			image(botao, width / 2, 330, 220, 35);
+		if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 285 && mouseY <= 315) && inicio) {
+			image(botao, width / 2, 300, 220, 35);
 		}
 
-		if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 350 && mouseY <= 380) && inicio) {
-			image(conquistas, width / 2, 365, 220, 35);
+		if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 320 && mouseY <= 350) && inicio) {
+			image(conquistas, width / 2, 335, 220, 35);
 		}
 
-		if ((mouseX >= 215 && mouseX <= 280 && mouseY >= 385 && mouseY <= 415) && inicio) {
-			if (dificuldade == facil) {
-				image(speedMinOn, width / 2 - 72, 400, 70, 35);
-			} else {
-				image(speedMin, width / 2 - 72, 400, 70, 35);
+		if ((mouseY >= 390 && mouseY <= 420) && inicio) {
+			if(mouseX >= 215 && mouseX <= 280){
+				if (dificuldade == facil) {
+					image(speedMinOn, width / 2 - 72, 405, 70, 35);
+				} else {
+					image(speedMin, width / 2 - 72, 405, 70, 35);
+				}
+			} else if (mouseX >= 285 && mouseX <= 350) {
+				if (dificuldade == medio) {
+					image(speedMedOn, width / 2, 405, 70, 35);
+				} else {
+					image(speedMed, width / 2, 405, 70, 35);
+				}
+			} else if (mouseX >= 360 && mouseX <= 425) {
+				if (dificuldade == dificil) {
+					image(speedMaxOn, width / 2 + 73, 405, 70, 35);
+				} else {
+					image(speedMax, width / 2 + 73, 405, 70, 35);
+				}
 			}
 		}
-		if ((mouseX >= 285 && mouseX <= 350 && mouseY >= 385 && mouseY <= 415) && inicio) {
-			if (dificuldade == medio) {
-				image(speedMedOn, width / 2, 400, 70, 35);
-			} else {
-				image(speedMed, width / 2, 400, 70, 35);
-			}
-		}
-		if ((mouseX >= 360 && mouseX <= 425 && mouseY >= 385 && mouseY <= 415) && inicio) {
-			if (dificuldade == dificil) {
-				image(speedMaxOn, width / 2 + 73, 400, 70, 35);
-			} else {
-				image(speedMax, width / 2 + 73, 400, 70, 35);
+
+		if ((mouseY >= 355 && mouseY <= 385) && inicio) {
+			if(mouseX >= 215 && mouseX <= 280){
+				if (passaroCor == "vermelho") {
+					image(botaoVermelhoOn, width / 2 - 72, 370, 70, 35);
+				} else {
+					image(botaoVermelho, width / 2 - 72, 370, 70, 35);
+				}
+			} else if (mouseX >= 285 && mouseX <= 350 && pontosTotal >= 4) {
+				if (passaroCor == "amarelo") {
+					image(botaoAmareloOn, width / 2, 370, 70, 35);
+				} else {
+					image(botaoAmarelo, width / 2, 370, 70, 35);
+				}
+			} else if (mouseX >= 360 && mouseX <= 425 && pontosTotal >= 15) {
+				if (passaroCor == "azul") {
+					image(botaoAzulOn, width / 2 + 73, 370, 70, 35);
+				} else {
+					image(botaoAzul, width / 2 + 73, 370, 70, 35);
+				}
 			}
 		}
 
@@ -376,7 +438,7 @@ function telaConquista() {
 }
 
 function mouseClicked() {
-	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 350 && mouseY <= 380) && inicio) {
+	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 320 && mouseY <= 350) && inicio) {
 		inicio = !inicio;
 		conquista = !conquista;
 	}
@@ -445,7 +507,7 @@ function mouseClicked() {
 		}
 	}
 
-	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 315 && mouseY <= 345) && inicio) {
+	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 285 && mouseY <= 315) && inicio) {
 		/* 	Como não haverá mais do que 12 tuneis / simbolos,
 		é feito um random para 12 posições possíveis,
 		e apenas apresentado as necessárias,
@@ -463,15 +525,24 @@ function mouseClicked() {
 		niveis = !niveis;
 	}
 
-	if ((mouseX >= 215 && mouseX <= 280 && mouseY >= 385 && mouseY <= 415) && inicio) {
-		dificuldade = facil;
+	if(mouseY >= 385 && mouseY <= 415){
+		if (mouseX >= 215 && mouseX <= 280) {
+			dificuldade = facil;
+		} else if (mouseX >= 285 && mouseX <= 350) {
+			dificuldade = medio;
+		} else if (mouseX >= 360 && mouseX <= 425) {
+			dificuldade = dificil;
+		}
 	}
-	if ((mouseX >= 285 && mouseX <= 350 && mouseY >= 385 && mouseY <= 415) && inicio) {
-		dificuldade = medio;
-	}
-	if ((mouseX >= 360 && mouseX <= 425 && mouseY >= 385 && mouseY <= 415) && inicio) {
-		dificuldade = dificil;
 
+	if((mouseY >= 355 && mouseY <= 385)){
+		if (mouseX >= 215 && mouseX <= 280) {
+			passaroCor = "vermelho";
+		} else if (mouseX >= 285 && mouseX <= 350 && pontosTotal >= 4) {
+			passaroCor = "amarelo";
+		} else if (mouseX >= 360 && mouseX <= 425 && pontosTotal >= 15) {
+			passaroCor = "azul";
+		}
 	}
 }
 
@@ -522,7 +593,20 @@ function nivelESDL() {
 	const nivel = new Nivel(1, tunelX, topY, iconX, iconY, esdlbadge, pontos.esdl);
 
 	nivel.show();
-	nivel.passaro();
+	switch (passaroCor) {
+		case "vermelho":
+			nivel.passaro(birdVermelho);
+			break;
+		case "amarelo":
+			nivel.passaro(birdAmarelo);
+			break;
+		case "azul":
+			nivel.passaro(birdAzul);
+			break;
+	
+		default:
+			break;
+	}
 	nivel.extras();
 }
 
@@ -538,7 +622,20 @@ function nivelESS() {
 	const nivel = new Nivel(2, tunelX, topY, iconX, iconY, essbadge, pontos.ess);
 
 	nivel.show();
-	nivel.passaro();
+	switch (passaroCor) {
+		case "vermelho":
+			nivel.passaro(birdVermelho);
+			break;
+		case "amarelo":
+			nivel.passaro(birdAmarelo);
+			break;
+		case "azul":
+			nivel.passaro(birdAzul);
+			break;
+	
+		default:
+			break;
+	}
 	nivel.extras();
 }
 
@@ -554,7 +651,20 @@ function nivelESE() {
 	const nivel = new Nivel(3, tunelX, topY, iconX, iconY, esebadge, pontos.ese);
 
 	nivel.show();
-	nivel.passaro();
+	switch (passaroCor) {
+		case "vermelho":
+			nivel.passaro(birdVermelho);
+			break;
+		case "amarelo":
+			nivel.passaro(birdAmarelo);
+			break;
+		case "azul":
+			nivel.passaro(birdAzul);
+			break;
+	
+		default:
+			break;
+	}
 	nivel.extras();
 }
 
@@ -570,7 +680,20 @@ function nivelESCE() {
 	const nivel = new Nivel(4, tunelX, topY, iconX, iconY, escebadge, pontos.esce);
 
 	nivel.show();
-	nivel.passaro();
+	switch (passaroCor) {
+		case "vermelho":
+			nivel.passaro(birdVermelho);
+			break;
+		case "amarelo":
+			nivel.passaro(birdAmarelo);
+			break;
+		case "azul":
+			nivel.passaro(birdAzul);
+			break;
+	
+		default:
+			break;
+	}
 	nivel.extras();
 }
 
@@ -586,7 +709,20 @@ function nivelESA() {
 	const nivel = new Nivel(5, tunelX, topY, iconX, iconY, esabadge, pontos.esa);
 
 	nivel.show();
-	nivel.passaro();
+	switch (passaroCor) {
+		case "vermelho":
+			nivel.passaro(birdVermelho);
+			break;
+		case "amarelo":
+			nivel.passaro(birdAmarelo);
+			break;
+		case "azul":
+			nivel.passaro(birdAzul);
+			break;
+	
+		default:
+			break;
+	}
 	nivel.extras();
 }
 
@@ -602,6 +738,19 @@ function nivelESTG() {
 	const nivel = new Nivel(11, tunelX, topY, iconX, iconY, estgbadge, pontos.estg);
 
 	nivel.show();
-	nivel.passaro();
+	switch (passaroCor) {
+		case "vermelho":
+			nivel.passaro(birdVermelho);
+			break;
+		case "amarelo":
+			nivel.passaro(birdAmarelo);
+			break;
+		case "azul":
+			nivel.passaro(birdAzul);
+			break;
+	
+		default:
+			break;
+	}
 	nivel.extras();
 }
