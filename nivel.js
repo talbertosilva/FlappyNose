@@ -11,6 +11,7 @@ class Nivel {
 
 	show() {
 		if (carregou) {
+
 			/* -- Loop do número de tuneis a mostrar -- */
 			for (let i = 1; i < this.cursos + 1; i++) {
 
@@ -25,6 +26,10 @@ class Nivel {
 					if ((initialBirdX + 16) > (this.tunelX + + 300 + 300 * i) && (initialBirdX - 16) < (this.tunelX + 300 + 300 * i + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
 						nivel = 0;
 						endSound.play();
+						passouNivel = true;
+						setTimeout(function(){
+							passouNivel = false;
+						}, 5000);
 						inicio = false;
 						conquista = true;
 					}
@@ -41,9 +46,12 @@ class Nivel {
 	}
 
 	passaro(passaro) {
-		if (carregou) {
+		if (carregou && crashou == false) {
 			imageMode(CENTER);
 			image(passaro, initialBirdX, noseY, 32, 32);
+		}
+		if (crashou){
+			image (explosion, initialBirdX, noseY, 64, 64);
 		}
 	}
 
@@ -57,7 +65,8 @@ class Nivel {
 		ellipse(width / 2, 55, 50, 50);
 		fill(255);
 		textSize(32);
+		textAlign(CENTER);
 		textFont(newFont);
-		text(`${this.pontos}`, width / 2 - 8, 65);
+		text(`${this.pontos}`, width / 2, 65);
 	}
 }
