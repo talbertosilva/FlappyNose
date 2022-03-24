@@ -15,8 +15,8 @@ let crashou = false;
 /* Pontos iniciais de cada nível */
 let pontos = { estg: 0, ese: 0, esa: 0, esce: 0, esdl: 0, ess: 0};
 let recorde = 0;
-let recordeRanking = [];
-let recordeRanking3 = [];
+let recordeRanking = [0, 0, 0];
+let recordeRanking3 = [0, 0, 0];
 let pontosTotal = 0;
 let skinsUnlocked = 0;
 
@@ -427,20 +427,14 @@ function telaRecorde() {
 
 	recordeRanking3 = recordeRanking.slice(-3);
 
-	for(i = 0; i < 3; i++){
-		if(recordeRanking3[i] == undefined){
-			recordeRanking3[i] = 0;
-		}
-	}
-
 	imageMode(CENTER);
 	image(jogarModoRecorde, 320, 210);
 	textAlign(CENTER);
 	fill(255);
 	textSize(32);
-	text (`${recordeRanking3[2]}`, 190, 370);
-	text (`${recordeRanking3[1]}`, 320, 370);
-	text (`${recordeRanking3[0]}`, 450, 370);
+	text (`${recordeRanking3[2]}`, 190, 365);
+	text (`${recordeRanking3[1]}`, 320, 365);
+	text (`${recordeRanking3[0]}`, 450, 365);
 	
 
 	if ((mouseX >= 115 && mouseX <= 525 && mouseY >= 150 && mouseY <= 270) && screenRecorde) {
