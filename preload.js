@@ -1,4 +1,5 @@
 /* Função para carregar os diversos assets */
+
 function preload() {
 
 	// -- Imagem do pássaro

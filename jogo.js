@@ -13,7 +13,7 @@ let iconX;
 let crashou = false;
 
 /* Pontos iniciais de cada nível */
-let pontos = { estg: 0, ese: 0, esa: 0, esce: 0, esdl: 0, ess: 0};
+let pontos = { estg: 0, ese: 0, esa: 0, esce: 0, esdl: 0, ess: 0 };
 let recorde = 0;
 let recordeRanking = [0, 0, 0];
 let recordeRanking3 = [0, 0, 0];
@@ -226,7 +226,7 @@ function draw() {
 		} else if (conquista == false && inicio == false) {
 			if (niveis) {
 				telaNiveis();
-			} else if(screenRecorde){
+			} else if (screenRecorde) {
 				telaRecorde();
 			} else {
 				switch (nivel) {
@@ -259,28 +259,28 @@ function draw() {
 			telaConquista();
 		}
 
-		if(passouNivel == true){
+		if (passouNivel == true) {
 			imageMode(CORNER);
 			image(badgeColetado, -5, 415);
 		}
 
-		if(novaSkin == true){
+		if (novaSkin == true) {
 			imageMode(CORNER);
 			image(skinDesbloqueada, -5, 365);
 		}
-		if(pontosTotal == 4 && skinsUnlocked < 1){
+		if (pontosTotal == 4 && skinsUnlocked < 1) {
 			novaSkin = true;
-			setTimeout(function(){
+			setTimeout(function () {
 				novaSkin = false;
 				skinsUnlocked = 1;
-			},5000);
+			}, 5000);
 		}
-		if(pontosTotal == 15 && skinsUnlocked < 2){
+		if (pontosTotal == 15 && skinsUnlocked < 2) {
 			novaSkin = true;
-			setTimeout(function(){
+			setTimeout(function () {
 				novaSkin = false;
 				skinsUnlocked = 2;
-			},5000);
+			}, 5000);
 		}
 	}
 }
@@ -421,10 +421,12 @@ function telaRecorde() {
 		image(voltar, 20, 20, 36, 36);
 	}
 
+	/* 
+		É feito uma ordem da array (sort), e recortado (slice) os 3 maiores valores dessa array
+	*/
 	recordeRanking.sort(function (a, b) {
 		return a - b;
 	});
-
 	recordeRanking3 = recordeRanking.slice(-3);
 
 	imageMode(CENTER);
@@ -432,10 +434,10 @@ function telaRecorde() {
 	textAlign(CENTER);
 	fill(255);
 	textSize(32);
-	text (`${recordeRanking3[2]}`, 190, 365);
-	text (`${recordeRanking3[1]}`, 320, 365);
-	text (`${recordeRanking3[0]}`, 450, 365);
-	
+	text(`${recordeRanking3[2]}`, 190, 365);
+	text(`${recordeRanking3[1]}`, 320, 365);
+	text(`${recordeRanking3[0]}`, 450, 365);
+
 
 	if ((mouseX >= 115 && mouseX <= 525 && mouseY >= 150 && mouseY <= 270) && screenRecorde) {
 		image(jogarModoRecorde, 320, 210, 420, 130);
@@ -448,16 +450,36 @@ function telaRecorde() {
 	text("escolha o nivel", 116, 135);
 }
 
+
+/*
+	Função para testar os cliques do rato
+*/
+
 function mouseClicked() {
+
+	/* 
+		Caso o cursor clique nesta posição e esteja na tela inicio	(inicio == true), 
+		é aberto a tela de conquistas	(inicio passa a false, e as conquistas a true)
+	*/
 	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 320 && mouseY <= 350) && inicio) {
 		inicio = !inicio;
 		conquista = !conquista;
 	}
 
+	/* 
+		Caso o cursor clique nesta posição e esteja na tela conquista	(conquista == true), 
+		é aberto a tela do inicio	(inicio passa a true, e as conquistas a false)
+	*/
 	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && conquista) {
 		inicio = !inicio;
 		conquista = !conquista;
 	}
+
+	/* 
+		Caso o cursor clique nesta posição e esteja na tela conquistas	(conquista == true), 
+		é dado o reset das pontuações	(todas as pontuações = 0)
+		assim como, dá reset às skins obtidas	(passaroCor = "vermelho")
+	*/
 	if ((mouseX >= (width - 52) && mouseX <= (width - 20) && mouseY >= 20 && mouseY <= 52) && conquista) {
 		pontos.esa = 0;
 		pontos.estg = 0;
@@ -465,15 +487,23 @@ function mouseClicked() {
 		pontos.esdl = 0;
 		pontos.ese = 0;
 		pontos.ess = 0;
+		passaroCor = "vermelho";
 	}
 
+	/* 
+		Testa os cliques da página niveis	(niveis == true)
+	*/
 	if (niveis) {
-		/* Botão de voltar atrás */
+		/* 
+			Retornar à página inicio
+		*/
 		if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52)) {
 			inicio = !inicio;
 			niveis = !niveis;
 		}
-		/* Botão de avançar */
+		/* 
+			Avançar para a tela de recordes (screenRecorde == true)
+		*/
 		if ((mouseX >= 540 && mouseX <= 570 && mouseY >= 380 && mouseY <= 410)) {
 			inicio = false;
 			niveis = false;
@@ -481,7 +511,16 @@ function mouseClicked() {
 			screenRecorde = true;
 		}
 
-		/* Botões dos niveis */
+		/* 
+			Botões para os devidos niveis
+			Em cada nivel é verificado se a pontuação é diferente da pontuação máxima,
+			caso isto se verifique, é dado o reset da pontuação desse nivel (pontos = 0),
+			assim como, tornado false a página de niveis, para que esta não seja mais
+			mostrada, e por fim atribuido à variavel "nivel", o devido nivel.
+			Caso nivel = 1, será ativado o nivel 1.
+			Este clique leva para um switch que dependendo da variável "nivel", será ativado
+			o nivel em questão.
+		*/
 		if ((mouseX >= 115 && mouseX <= 240 && mouseY >= 150 && mouseY <= 270)) {
 			if (pontos.esdl != 1) {
 				pontos.esdl = 0;
@@ -521,7 +560,14 @@ function mouseClicked() {
 		}
 	}
 
-	if(screenRecorde){
+	/* 
+		Botões da página de recordes
+	*/
+	if (screenRecorde) {
+		/* 
+			Voltar para a página dos niveis, e é reforçado que as outras telas estejam em false,
+			para que não haja sobreposição de telas.
+		*/
 		if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52)) {
 			inicio = false;
 			niveis = true;
@@ -529,7 +575,13 @@ function mouseClicked() {
 			screenRecorde = false;
 		}
 
-		if ((mouseX >= 115 && mouseX <= 525 && mouseY >= 150 && mouseY <= 270)){
+		/* 
+			Caso clique em jogar, é resetado a variável do recorde (recorde = 0),
+			desligado a tela de recorde	(screenRecorde = false),
+			resetado a velocidade / dificuldado do jogo	(dificuldadeRecorde = 2.5),
+			e por fim, atribuido à variável "nivel", o devido nivel.
+		*/
+		if ((mouseX >= 115 && mouseX <= 525 && mouseY >= 150 && mouseY <= 270)) {
 			recorde = 0;
 			screenRecorde = false;
 			dificuldadeRecorde = 2.5;
@@ -538,10 +590,11 @@ function mouseClicked() {
 	}
 
 	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 285 && mouseY <= 315) && inicio) {
-		/* 	Como não haverá mais do que 12 tuneis / simbolos,
-		é feito um random para 12 posições possíveis,
-		e apenas apresentado as necessárias,
-		por exemplo num nível de 5 tuneis, será apenas utilizado 5 randoms */
+		/* 	
+			É feito um random para 999 posições possíveis,
+			e apenas apresentado as necessárias,
+			por exemplo num nível de 5 tuneis, será apenas utilizado 5 randoms
+		*/
 		for (let i = 1; i < 999; i++) {
 			topY[i] = random(-540, -440);
 		}
@@ -555,25 +608,33 @@ function mouseClicked() {
 		niveis = !niveis;
 	}
 
-	if (mouseY >= 385 && mouseY <= 415) {
-		if (mouseX >= 215 && mouseX <= 280) {
-			dificuldade = facil;
-		} else if (mouseX >= 285 && mouseX <= 350) {
-			dificuldade = medio;
-		} else if (mouseX >= 360 && mouseX <= 425) {
-			dificuldade = dificil;
+	/*
+		Botões na tela de inicio, para alterar o nivel de dificuldade,
+		assim como a cor do pássaro.
+	*/
+	if (inicio) {
+		if (mouseY >= 385 && mouseY <= 415) {
+			if (mouseX >= 215 && mouseX <= 280) {
+				dificuldade = facil;
+			} else if (mouseX >= 285 && mouseX <= 350) {
+				dificuldade = medio;
+			} else if (mouseX >= 360 && mouseX <= 425) {
+				dificuldade = dificil;
+			}
+		}
+
+		if ((mouseY >= 355 && mouseY <= 385)) {
+			if (mouseX >= 215 && mouseX <= 280) {
+				passaroCor = "vermelho";
+			} else if (mouseX >= 285 && mouseX <= 350 && pontosTotal >= 4) {
+				passaroCor = "amarelo";
+			} else if (mouseX >= 360 && mouseX <= 425 && pontosTotal >= 15) {
+				passaroCor = "azul";
+			}
 		}
 	}
 
-	if ((mouseY >= 355 && mouseY <= 385)) {
-		if (mouseX >= 215 && mouseX <= 280) {
-			passaroCor = "vermelho";
-		} else if (mouseX >= 285 && mouseX <= 350 && pontosTotal >= 4) {
-			passaroCor = "amarelo";
-		} else if (mouseX >= 360 && mouseX <= 425 && pontosTotal >= 15) {
-			passaroCor = "azul";
-		}
-	}
+	
 }
 
 function nivelESDL() {
@@ -762,21 +823,26 @@ function nivelESTG() {
 	nivel.extras();
 }
 
+/* 
+	Explicação destas funções de nivel
+*/
 function recordeNivel() {
 	background('white');
 
 	imageMode(CORNER);
 	image(video, 0, 0);
 
+	// -- Quando perder o jogo (crashou == true), a movimentação dos tuneis e dos simbolos, pára
 	if (crashou == false) {
 		tunelX = tunelX - 1 * dificuldadeRecorde;
 		iconX = iconX - 1 * dificuldadeRecorde;
 	}
 
+	// -- Velocidade sempre a crescer
 	dificuldadeRecorde = dificuldadeRecorde + 0.001;
 
+	// -- Criação do devido nivel com os respectivos valores
 	const nivel = new Nivel(999, tunelX, topY, iconX, iconY, estgbadge, recorde);
-
 	nivel.show();
 	switch (passaroCor) {
 		case "vermelho":

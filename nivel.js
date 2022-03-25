@@ -1,5 +1,9 @@
+/* Classe geral dos níveis */
+
 class Nivel {
-	constructor(cursos, tunelX, topY, iconX, iconY, badge, pontosEscola) {
+
+	// -- Constructor para as diferentes variáveis de cada nivel
+	constructor(cursos, tunelX, topY, iconX, iconY, badge, pontosEscola, vidas) {
 		this.cursos = cursos;
 		this.tunelX = tunelX;
 		this.topY = topY;
@@ -7,54 +11,58 @@ class Nivel {
 		this.iconX = iconX;
 		this.iconY = iconY;
 		this.pontos = pontosEscola;
+		this.vidas = vidas;
 	}
 
+	// -- Ciclo for para estar sempre a dar print aos tuneis e aos coletáveis
 	show() {
-		if (carregou) {
+		// -- Loop do número de tuneis a mostrar
+		for (let i = 1; i < this.cursos + 1; i++) {
 
-			/* -- Loop do número de tuneis a mostrar -- */
-			for (let i = 1; i < this.cursos + 1; i++) {
+			// -- Mostra cada tunel (cima e baixo)
+			image(tunelTop, this.tunelX + (300 * i), this.topY[i]);
+			image(tunelDown, this.tunelX + (300 * i), (this.topY[i] + 790));
 
-				/* -- Mostra cada tunel (cima e baixo) -- */
-				image(tunelTop, this.tunelX + (300 * i), this.topY[i]);
-				image(tunelDown, this.tunelX + (300 * i), (this.topY[i] + 790));
-
-
-				if (i == this.cursos) {
-					image(end, this.tunelX + 300 + 300 * i, 0, 108, 480);
-
-					if ((initialBirdX + 16) > (this.tunelX + + 300 + 300 * i) && (initialBirdX - 16) < (this.tunelX + 300 + 300 * i + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
-						nivel = 0;
-						endSound.play();
-						passouNivel = true;
-						setTimeout(function(){
-							passouNivel = false;
-						}, 5000);
-						inicio = false;
-						conquista = true;
-					}
+			// -- Adiciona uma camada de terminar o nivel
+			if (i == this.cursos) {
+				image(end, this.tunelX + 300 + 300 * i, 0, 108, 480);
+				// -- Assim que o passaro bate nessa camada, o jogo termina
+				if ((initialBirdX + 16) > (this.tunelX + + 300 + 300 * i) && (initialBirdX - 16) < (this.tunelX + 300 + 300 * i + 108) && (noseY + 16) > 0 && (noseY - 16) < 480) {
+					nivel = 0;
+					endSound.play();
+					passouNivel = true;
+					setTimeout(function () {
+						passouNivel = false;
+					}, 5000);
+					inicio = false;
+					conquista = true;
 				}
-
-				if (collected[i]) {
-					image(this.badge, this.iconX + (300 * i), (this.iconY[i]), 57, 40.6);
-				}
-
-				/* -- Invoca a função das colisões, com o devido i -- */
-				testarColisão(i);
 			}
+
+			if (collected[i]) {
+				image(this.badge, this.iconX + (300 * i), (this.iconY[i]), 57, 40.6);
+			}
+
+			// -- Invoca a função das colisões, com o devido i
+			testarColisão(i);
 		}
 	}
 
+	// -- Dá print ao pássaro escolhido
 	passaro(passaro) {
-		if (carregou && crashou == false) {
+		// -- Enquanto não perder o jogo, o passaro está sempre a aparecer
+		if (crashou == false) {
 			imageMode(CENTER);
 			image(passaro, initialBirdX, noseY, 32, 32);
 		}
-		if (crashou){
-			image (explosion, initialBirdX, noseY, 64, 64);
+
+		// -- Quando perder, o pássaro desaparece e aparece a animação da explosão
+		if (crashou) {
+			image(explosion, initialBirdX, noseY, 64, 64);
 		}
 	}
 
+	// -- Extras, como o logotipo no canto, os pontos, etc...
 	extras() {
 		imageMode(CORNER);
 		image(logo, 25, 25, 120, 60);
