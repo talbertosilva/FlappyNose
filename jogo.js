@@ -16,6 +16,7 @@ let crashou = false;
 let pontos = { estg: 0, ese: 0, esa: 0, esce: 0, esdl: 0, ess: 0 };
 let recorde = 0;
 let recordeRanking = [0, 0, 0];
+//top 3 jogadores
 let recordeRanking3 = [0, 0, 0];
 let pontosTotal = 0;
 let skinsUnlocked = 0;
@@ -88,10 +89,9 @@ function modelLoaded() {
 	}, 1000);
 }
 
+
 function draw() {
 	pontosTotal = pontos.estg + pontos.ese + pontos.esa + pontos.esce + pontos.esdl + pontos.ess;
-
-
 
 	if (carregou == false) {
 		image(loading, 0, 0);
@@ -107,122 +107,7 @@ function draw() {
 	} if (carregou == true) {
 
 		if (inicio) {
-			background('grey');
-
-			tunelX = 320;
-			iconX = 480;
-
-			imageMode(CORNER);
-			image(begin, 0, 0);
-			imageMode(CENTER);
-			image(botao, width / 2, 300);
-			image(conquistas, width / 2, 335);
-
-			image(speedMin, width / 2 - 72, 405);
-			image(speedMed, width / 2, 405);
-			image(speedMax, width / 2 + 73, 405);
-
-			image(botaoVermelho, width / 2 - 72, 370);
-			image(botaoAmareloLock, width / 2, 370);
-			image(botaoAzulLock, width / 2 + 73, 370);
-
-			switch (dificuldade) {
-				case facil:
-					image(speedMinOn, width / 2 - 72, 405);
-					break;
-				case medio:
-					image(speedMedOn, width / 2, 405);
-					break;
-				case dificil:
-					image(speedMaxOn, width / 2 + 73, 405);
-					break;
-				default:
-					break;
-			}
-
-			if (pontosTotal >= 4) {
-				image(botaoAmarelo, width / 2, 370);
-			}
-			if (pontosTotal >= 15) {
-				image(botaoAzul, width / 2 + 73, 370);
-			}
-
-			switch (passaroCor) {
-				case "vermelho":
-					image(botaoVermelhoOn, width / 2 - 72, 370);
-					break;
-				case "amarelo":
-					image(botaoAmareloOn, width / 2, 370);
-					break;
-				case "azul":
-					image(botaoAzulOn, width / 2 + 73, 370);
-					break;
-				default:
-					break;
-			}
-
-			textSize(16);
-			fill(48, 64, 43);
-			textFont(newFont);
-			text("Trabalho realizado por:		João Pires		Nelson Dias		Tiago Silva", textoX, textoY);
-			textoX = textoX - 1.5;
-
-			if (textoX + 480 < 0) {
-				textoX = 640;
-			}
-
-			if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 285 && mouseY <= 315) && inicio) {
-				image(botaoOn, width / 2, 300, 220, 35);
-			}
-
-			if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 320 && mouseY <= 350) && inicio) {
-				image(conquistasOn, width / 2, 335, 220, 35);
-			}
-
-			if ((mouseY >= 390 && mouseY <= 420) && inicio) {
-				if (mouseX >= 215 && mouseX <= 280) {
-					if (dificuldade == facil) {
-						image(speedMinOn, width / 2 - 72, 405, 70, 35);
-					} else {
-						image(speedMin, width / 2 - 72, 405, 70, 35);
-					}
-				} else if (mouseX >= 285 && mouseX <= 350) {
-					if (dificuldade == medio) {
-						image(speedMedOn, width / 2, 405, 70, 35);
-					} else {
-						image(speedMed, width / 2, 405, 70, 35);
-					}
-				} else if (mouseX >= 360 && mouseX <= 425) {
-					if (dificuldade == dificil) {
-						image(speedMaxOn, width / 2 + 73, 405, 70, 35);
-					} else {
-						image(speedMax, width / 2 + 73, 405, 70, 35);
-					}
-				}
-			}
-
-			if ((mouseY >= 355 && mouseY <= 385) && inicio) {
-				if (mouseX >= 215 && mouseX <= 280) {
-					if (passaroCor == "vermelho") {
-						image(botaoVermelhoOn, width / 2 - 72, 370, 70, 35);
-					} else {
-						image(botaoVermelho, width / 2 - 72, 370, 70, 35);
-					}
-				} else if (mouseX >= 285 && mouseX <= 350 && pontosTotal >= 4) {
-					if (passaroCor == "amarelo") {
-						image(botaoAmareloOn, width / 2, 370, 70, 35);
-					} else {
-						image(botaoAmarelo, width / 2, 370, 70, 35);
-					}
-				} else if (mouseX >= 360 && mouseX <= 425 && pontosTotal >= 15) {
-					if (passaroCor == "azul") {
-						image(botaoAzulOn, width / 2 + 73, 370, 70, 35);
-					} else {
-						image(botaoAzul, width / 2 + 73, 370, 70, 35);
-					}
-				}
-			}
-
+			faseinicio();
 		} else if (conquista == false && inicio == false) {
 			if (niveis) {
 				telaNiveis();
@@ -281,6 +166,125 @@ function draw() {
 				novaSkin = false;
 				skinsUnlocked = 2;
 			}, 5000);
+		}
+	}
+}
+
+function faseinicio() {
+
+	background('grey');
+
+	tunelX = 320;
+	iconX = 480;
+
+	imageMode(CORNER);
+	image(begin, 0, 0);
+	imageMode(CENTER);
+	image(botao, width / 2, 300);
+	image(conquistas, width / 2, 335);
+
+	image(speedMin, width / 2 - 72, 405);
+	image(speedMed, width / 2, 405);
+	image(speedMax, width / 2 + 73, 405);
+
+	image(botaoVermelho, width / 2 - 72, 370);
+	image(botaoAmareloLock, width / 2, 370);
+	image(botaoAzulLock, width / 2 + 73, 370);
+
+	switch (dificuldade) {
+		case facil:
+			image(speedMinOn, width / 2 - 72, 405);
+			break;
+		case medio:
+			image(speedMedOn, width / 2, 405);
+			break;
+		case dificil:
+			image(speedMaxOn, width / 2 + 73, 405);
+			break;
+		default:
+			break;
+	}
+
+	if (pontosTotal >= 4) {
+		image(botaoAmarelo, width / 2, 370);
+	}
+	if (pontosTotal >= 15) {
+		image(botaoAzul, width / 2 + 73, 370);
+	}
+
+	switch (passaroCor) {
+		case "vermelho":
+			image(botaoVermelhoOn, width / 2 - 72, 370);
+			break;
+		case "amarelo":
+			image(botaoAmareloOn, width / 2, 370);
+			break;
+		case "azul":
+			image(botaoAzulOn, width / 2 + 73, 370);
+			break;
+		default:
+			break;
+	}
+
+	textSize(16);
+	fill(48, 64, 43);
+	textFont(newFont);
+	text("Trabalho realizado por:		João Pires		Nelson Dias		Tiago Silva", textoX, textoY);
+	textoX = textoX - 1.5;
+
+	if (textoX + 480 < 0) {
+		textoX = 640;
+	}
+
+	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 285 && mouseY <= 315) && inicio) {
+		image(botaoOn, width / 2, 300, 220, 35);
+	}
+
+	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 320 && mouseY <= 350) && inicio) {
+		image(conquistasOn, width / 2, 335, 220, 35);
+	}
+
+	if ((mouseY >= 390 && mouseY <= 420) && inicio) {
+		if (mouseX >= 215 && mouseX <= 280) {
+			if (dificuldade == facil) {
+				image(speedMinOn, width / 2 - 72, 405, 70, 35);
+			} else {
+				image(speedMin, width / 2 - 72, 405, 70, 35);
+			}
+		} else if (mouseX >= 285 && mouseX <= 350) {
+			if (dificuldade == medio) {
+				image(speedMedOn, width / 2, 405, 70, 35);
+			} else {
+				image(speedMed, width / 2, 405, 70, 35);
+			}
+		} else if (mouseX >= 360 && mouseX <= 425) {
+			if (dificuldade == dificil) {
+				image(speedMaxOn, width / 2 + 73, 405, 70, 35);
+			} else {
+				image(speedMax, width / 2 + 73, 405, 70, 35);
+			}
+		}
+	}
+
+	if ((mouseY >= 355 && mouseY <= 385) && inicio) {
+		if (mouseX >= 215 && mouseX <= 280) {
+			if (passaroCor == "vermelho") {
+				image(botaoVermelhoOn, width / 2 - 72, 370, 70, 35);
+			} else {
+				image(botaoVermelho, width / 2 - 72, 370, 70, 35);
+			}
+		} else if (mouseX >= 285 && mouseX <= 350 && pontosTotal >= 4) {
+			if (passaroCor == "amarelo") {
+				image(botaoAmareloOn, width / 2, 370, 70, 35);
+			} else {
+				image(botaoAmarelo, width / 2, 370, 70, 35);
+			}
+		} else if (mouseX >= 360 && mouseX <= 425 && pontosTotal >= 15) {
+			if (passaroCor == "azul") {
+				image(botaoAzulOn, width / 2 + 73, 370, 70, 35);
+			} else {
+				image(botaoAzul, width / 2 + 73, 370, 70, 35);
+			}
 		}
 	}
 }
@@ -634,7 +638,7 @@ function mouseClicked() {
 		}
 	}
 
-	
+
 }
 
 function nivelESDL() {
