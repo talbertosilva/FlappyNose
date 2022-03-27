@@ -3,15 +3,21 @@
 class Nivel {
 
 	// -- Constructor para as diferentes variáveis de cada nivel
-	constructor(cursos, tunelX, topY, iconX, iconY, badge, pontosEscola, vidas) {
+	constructor(cursos, tunelX, topY, iconX, iconY, badge, pontosEscola) {
+		//numero de tuneis a mostrar
 		this.cursos = cursos;
+		//posição dos tuneis em X
 		this.tunelX = tunelX;
+		//posição Y dos tuneis de cima
 		this.topY = topY;
+		//imagem da escola superior nos pontos
 		this.badge = badge;
+		//posição X de todas os pontos
 		this.iconX = iconX;
+		//posição Y de todos os pontos
 		this.iconY = iconY;
+		//numero de pontos apanhados
 		this.pontos = pontosEscola;
-		this.vidas = vidas;
 	}
 
 	// -- Ciclo for para estar sempre a dar print aos tuneis e aos coletáveis
