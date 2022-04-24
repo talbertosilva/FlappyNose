@@ -173,425 +173,69 @@ function draw() {
 function faseinicio() {
 
 	background('grey');
+	frameRate(30);
 
 	tunelX = 320;
 	iconX = 480;
+
 
 	imageMode(CORNER);
 	image(begin, 0, 0);
 	imageMode(CENTER);
 	image(botao, width / 2, 300);
-	image(conquistas, width / 2, 335);
 
-	image(speedMin, width / 2 - 72, 405);
-	image(speedMed, width / 2, 405);
-	image(speedMax, width / 2 + 73, 405);
 
-	image(botaoVermelho, width / 2 - 72, 370);
-	image(botaoAmareloLock, width / 2, 370);
-	image(botaoAzulLock, width / 2 + 73, 370);
 
-	switch (dificuldade) {
-		case facil:
-			image(speedMinOn, width / 2 - 72, 405);
-			break;
-		case medio:
-			image(speedMedOn, width / 2, 405);
-			break;
-		case dificil:
-			image(speedMaxOn, width / 2 + 73, 405);
-			break;
-		default:
-			break;
-	}
+	pontosSaved = getItem('recorde');
 
-	if (pontosTotal >= 4) {
-		image(botaoAmarelo, width / 2, 370);
-	}
-	if (pontosTotal >= 15) {
-		image(botaoAzul, width / 2 + 73, 370);
-	}
 
-	switch (passaroCor) {
-		case "vermelho":
-			image(botaoVermelhoOn, width / 2 - 72, 370);
-			break;
-		case "amarelo":
-			image(botaoAmareloOn, width / 2, 370);
-			break;
-		case "azul":
-			image(botaoAzulOn, width / 2 + 73, 370);
-			break;
-		default:
-			break;
-	}
+	fill(48, 64, 43);
+	textAlign(CENTER, CENTER);
+	textSize(24);
+	text(`recorde`, width / 2, 350);
+	textSize(72);
+	text(`${pontosSaved}`, width / 2, 388);
+
 
 	textSize(16);
 	fill(48, 64, 43);
 	textFont(newFont);
-	text("Trabalho realizado por:		João Pires		Nelson Dias		Tiago Silva", textoX, textoY);
+	textAlign(CORNER);
+	text("Trabalho realizado por:		João Pires		Nelson Dias		Tiago Silva				engenharia da computação gráfica e multimédia", textoX, textoY);
 	textoX = textoX - 1.5;
 
-	if (textoX + 480 < 0) {
+	if (textoX + 880 < 0) {
 		textoX = 640;
 	}
 
-	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 285 && mouseY <= 315) && inicio) {
-		image(botaoOn, width / 2, 300, 220, 35);
-	}
+	if ((noseY >= 260 && noseY <= 330) && inicio) {
+		image(botaoOn, width / 2, 300, 220, 65);
+		setTimeout(function() {
+			if ((noseY >= 260 && noseY <= 330) && inicio) {
+				for (let i = 1; i < 999; i++) {
+					topY[i] = random(-540, -440);
+				}
+				for (let i = 1; i < 999; i++) {
+					iconY[i] = random(100, 350);
 
-	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 320 && mouseY <= 350) && inicio) {
-		image(conquistasOn, width / 2, 335, 220, 35);
-	}
+					collected[i] = true;
+				}
 
-	if ((mouseY >= 390 && mouseY <= 420) && inicio) {
-		if (mouseX >= 215 && mouseX <= 280) {
-			if (dificuldade == facil) {
-				image(speedMinOn, width / 2 - 72, 405, 70, 35);
-			} else {
-				image(speedMin, width / 2 - 72, 405, 70, 35);
+				inicio = !inicio;
+				recorde = 0;
+				screenRecorde = false;
+				dificuldadeRecorde = 2.5;
+				nivel = 7;
 			}
-		} else if (mouseX >= 285 && mouseX <= 350) {
-			if (dificuldade == medio) {
-				image(speedMedOn, width / 2, 405, 70, 35);
-			} else {
-				image(speedMed, width / 2, 405, 70, 35);
-			}
-		} else if (mouseX >= 360 && mouseX <= 425) {
-			if (dificuldade == dificil) {
-				image(speedMaxOn, width / 2 + 73, 405, 70, 35);
-			} else {
-				image(speedMax, width / 2 + 73, 405, 70, 35);
-			}
-		}
+		}, 3000);
 	}
 
-	if ((mouseY >= 355 && mouseY <= 385) && inicio) {
-		if (mouseX >= 215 && mouseX <= 280) {
-			if (passaroCor == "vermelho") {
-				image(botaoVermelhoOn, width / 2 - 72, 370, 70, 35);
-			} else {
-				image(botaoVermelho, width / 2 - 72, 370, 70, 35);
-			}
-		} else if (mouseX >= 285 && mouseX <= 350 && pontosTotal >= 4) {
-			if (passaroCor == "amarelo") {
-				image(botaoAmareloOn, width / 2, 370, 70, 35);
-			} else {
-				image(botaoAmarelo, width / 2, 370, 70, 35);
-			}
-		} else if (mouseX >= 360 && mouseX <= 425 && pontosTotal >= 15) {
-			if (passaroCor == "azul") {
-				image(botaoAzulOn, width / 2 + 73, 370, 70, 35);
-			} else {
-				image(botaoAzul, width / 2 + 73, 370, 70, 35);
-			}
-		}
-	}
-}
-
-function telaConquista() {
-	background('grey');
-	imageMode(CORNER);
-	image(conquistasIMG, 0, 0);
-	image(voltar, 20, 20);
-	image(resetar, width - 52, 20);
-
-	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && conquista) {
-		image(voltar, 20, 20, 36, 36);
-	}
-
-	if ((mouseX >= (width - 52) && mouseX <= (width - 20) && mouseY >= 20 && mouseY <= 52) && conquista) {
-		image(resetar, width - 52, 20, 36, 36);
-	}
-
-	textAlign(CENTER);
-	textFont(newFont);
-	textSize(24);
-
-	if (pontos.esdl == 1) {
-		image(esdlbadge, 130, 160, 91, 65)
-		fill(126, 226, 116);
-		text(`${pontos.esdl} / 1`, 175, 255);
-	} else {
-		image(esdlbadgeBW, 130, 160, 91, 65)
-		fill(132);
-		text(`${pontos.esdl} / 1`, 175, 255);
-	}
-
-	if (pontos.ess == 2) {
-		image(essbadge, width / 2 - 45.5, 160, 91, 65)
-		fill(126, 226, 116);
-		text(`${pontos.ess} / 2`, width / 2, 255);
-	} else {
-		image(essbadgeBW, width / 2 - 45.5, 160, 91, 65)
-		fill(132);
-		text(`${pontos.ess} / 2`, width / 2, 255);
-	}
-
-	if (pontos.ese == 3) {
-		image(esebadge, 415, 160, 91, 65)
-		fill(126, 226, 116);
-		text(`${pontos.ese} / 3`, 460, 255);
-	} else {
-		image(esebadgeBW, 415, 160, 91, 65)
-		fill(132);
-		text(`${pontos.ese} / 3`, 460, 255);
-	}
-
-	if (pontos.esce == 4) {
-		image(escebadge, 130, 300, 91, 65)
-		fill(126, 226, 116);
-		text(`${pontos.esce} / 4`, 175, 395);
-	} else {
-		image(escebadgeBW, 130, 300, 91, 65)
-		fill(132);
-		text(`${pontos.esce} / 4`, 175, 395);
-	}
-
-	if (pontos.esa == 5) {
-		image(esabadge, width / 2 - 45.5, 300, 91, 65)
-		fill(126, 226, 116);
-		text(`${pontos.esa} / 5`, width / 2, 395);
-	} else {
-		image(esabadgeBW, width / 2 - 45.5, 300, 91, 65)
-		fill(132);
-		text(`${pontos.esa} / 5`, width / 2, 395);
-	}
-
-	if (pontos.estg == 11) {
-		image(estgbadge, 415, 300, 91, 65)
-		fill(126, 226, 116);
-		text(`${pontos.estg} / 11`, 460, 395);
-	} else {
-		image(estgbadgeBW, 415, 300, 91, 65)
-		fill(132);
-		text(`${pontos.estg} / 11`, 460, 395);
-	}
-
-	textSize(20);
-	fill(55, 59, 54);
-	textFont(newFont)
-	textAlign(LEFT);
-	text("progresso dos niveis", 116, 135);
-}
-
-function telaNiveis() {
-	background('grey');
-	imageMode(CORNER);
-	image(niveisIMG, 0, 0);
-	image(voltar, 20, 20);
-	image(avancar, 540, 380);
-
-	if (pontos.esdl == 1) {
-		image(terminado, 118, 150)
-	}
-	if (pontos.ess == 2) {
-		image(terminado, 260, 150)
-	}
-	if (pontos.ese == 3) {
-		image(terminado, 401, 150)
-	}
-	if (pontos.esce == 4) {
-		image(terminado, 118, 292)
-	}
-	if (pontos.esa == 5) {
-		image(terminado, 260, 292)
-	}
-	if (pontos.estg == 11) {
-		image(terminado, 401, 292)
-	}
-
-	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && niveis) {
-		image(voltar, 20, 20, 36, 36);
-	}
-
-	if ((mouseX >= 540 && mouseX <= 570 && mouseY >= 380 && mouseY <= 410) && niveis) {
-		image(avancar, 540, 380, 36, 36);
-	}
-
-	textSize(20);
-	fill(55, 59, 54);
-	textFont(newFont)
-	textAlign(LEFT);
-	text("escolha o nivel", 116, 135);
-}
-
-function telaRecorde() {
-	background('grey');
-	imageMode(CORNER);
-	image(modoRecorde, 0, 0);
-	image(voltar, 20, 20);
-	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && screenRecorde) {
-		image(voltar, 20, 20, 36, 36);
-	}
-
-	/* 
-		É feito uma ordem da array (sort), e recortado (slice) os 3 maiores valores dessa array
-	*/
-	recordeRanking.sort(function (a, b) {
-		return a - b;
-	});
-	recordeRanking3 = recordeRanking.slice(-3);
-
-	imageMode(CENTER);
-	image(jogarModoRecorde, 320, 210);
-	textAlign(CENTER);
 	fill(255);
-	textSize(32);
-	text(`${recordeRanking3[2]}`, 190, 365);
-	text(`${recordeRanking3[1]}`, 320, 365);
-	text(`${recordeRanking3[0]}`, 450, 365);
-
-
-	if ((mouseX >= 115 && mouseX <= 525 && mouseY >= 150 && mouseY <= 270) && screenRecorde) {
-		image(jogarModoRecorde, 320, 210, 420, 130);
-	}
-
-	textSize(20);
-	fill(55, 59, 54);
-	textAlign(LEFT);
-	textFont(newFont)
-	text("escolha o nivel", 116, 135);
+	noStroke();
+	ellipse(320, noseY, 16, 16);
 }
-
-
-/*
-	Função para testar os cliques do rato
-*/
 
 function mouseClicked() {
-
-	/* 
-		Caso o cursor clique nesta posição e esteja na tela inicio	(inicio == true), 
-		é aberto a tela de conquistas	(inicio passa a false, e as conquistas a true)
-	*/
-	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 320 && mouseY <= 350) && inicio) {
-		inicio = !inicio;
-		conquista = !conquista;
-	}
-
-	/* 
-		Caso o cursor clique nesta posição e esteja na tela conquista	(conquista == true), 
-		é aberto a tela do inicio	(inicio passa a true, e as conquistas a false)
-	*/
-	if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52) && conquista) {
-		inicio = !inicio;
-		conquista = !conquista;
-	}
-
-	/* 
-		Caso o cursor clique nesta posição e esteja na tela conquistas	(conquista == true), 
-		é dado o reset das pontuações	(todas as pontuações = 0)
-		assim como, dá reset às skins obtidas	(passaroCor = "vermelho")
-	*/
-	if ((mouseX >= (width - 52) && mouseX <= (width - 20) && mouseY >= 20 && mouseY <= 52) && conquista) {
-		pontos.esa = 0;
-		pontos.estg = 0;
-		pontos.esce = 0;
-		pontos.esdl = 0;
-		pontos.ese = 0;
-		pontos.ess = 0;
-		passaroCor = "vermelho";
-	}
-
-	/* 
-		Testa os cliques da página niveis	(niveis == true)
-	*/
-	if (niveis) {
-		/* 
-			Retornar à página inicio
-		*/
-		if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52)) {
-			inicio = !inicio;
-			niveis = !niveis;
-		}
-		/* 
-			Avançar para a tela de recordes (screenRecorde == true)
-		*/
-		if ((mouseX >= 540 && mouseX <= 570 && mouseY >= 380 && mouseY <= 410)) {
-			inicio = false;
-			niveis = false;
-			conquista = false;
-			screenRecorde = true;
-		}
-
-		/* 
-			Botões para os devidos niveis
-			Em cada nivel é verificado se a pontuação é diferente da pontuação máxima,
-			caso isto se verifique, é dado o reset da pontuação desse nivel (pontos = 0),
-			assim como, tornado false a página de niveis, para que esta não seja mais
-			mostrada, e por fim atribuido à variavel "nivel", o devido nivel.
-			Caso nivel = 1, será ativado o nivel 1.
-			Este clique leva para um switch que dependendo da variável "nivel", será ativado
-			o nivel em questão.
-		*/
-		if ((mouseX >= 115 && mouseX <= 240 && mouseY >= 150 && mouseY <= 270)) {
-			if (pontos.esdl != 1) {
-				pontos.esdl = 0;
-				niveis = false;
-				nivel = 1;
-			}
-		} else if ((mouseX >= 257 && mouseX <= 380 && mouseY >= 150 && mouseY <= 270)) {
-			if (pontos.ess != 2) {
-				pontos.ess = 0;
-				niveis = false;
-				nivel = 2;
-			}
-		} else if ((mouseX >= 400 && mouseX <= 520 && mouseY >= 150 && mouseY <= 270)) {
-			if (pontos.ese != 3) {
-				pontos.ese = 0;
-				niveis = false;
-				nivel = 3;
-			}
-		} else if ((mouseX >= 115 && mouseX <= 240 && mouseY >= 290 && mouseY <= 410)) {
-			if (pontos.esce != 4) {
-				pontos.esce = 0;
-				niveis = false;
-				nivel = 4;
-			}
-		} else if ((mouseX >= 257 && mouseX <= 380 && mouseY >= 290 && mouseY <= 410)) {
-			if (pontos.esa != 5) {
-				pontos.esa = 0;
-				niveis = false;
-				nivel = 5;
-			}
-		} else if ((mouseX >= 400 && mouseX <= 520 && mouseY >= 290 && mouseY <= 410)) {
-			if (pontos.estg != 11) {
-				pontos.estg = 0;
-				niveis = false;
-				nivel = 6;
-			}
-		}
-	}
-
-	/* 
-		Botões da página de recordes
-	*/
-	if (screenRecorde) {
-		/* 
-			Voltar para a página dos niveis, e é reforçado que as outras telas estejam em false,
-			para que não haja sobreposição de telas.
-		*/
-		if ((mouseX >= 20 && mouseX <= 52 && mouseY >= 20 && mouseY <= 52)) {
-			inicio = false;
-			niveis = true;
-			conquista = false;
-			screenRecorde = false;
-		}
-
-		/* 
-			Caso clique em jogar, é resetado a variável do recorde (recorde = 0),
-			desligado a tela de recorde	(screenRecorde = false),
-			resetado a velocidade / dificuldado do jogo	(dificuldadeRecorde = 2.5),
-			e por fim, atribuido à variável "nivel", o devido nivel.
-		*/
-		if ((mouseX >= 115 && mouseX <= 525 && mouseY >= 150 && mouseY <= 270)) {
-			recorde = 0;
-			screenRecorde = false;
-			dificuldadeRecorde = 2.5;
-			nivel = 7;
-		}
-	}
 
 	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 285 && mouseY <= 315) && inicio) {
 		/* 	
@@ -609,222 +253,11 @@ function mouseClicked() {
 		}
 
 		inicio = !inicio;
-		niveis = !niveis;
+		recorde = 0;
+		screenRecorde = false;
+		dificuldadeRecorde = 2.5;
+		nivel = 7;
 	}
-
-	/*
-		Botões na tela de inicio, para alterar o nivel de dificuldade,
-		assim como a cor do pássaro.
-	*/
-	if (inicio) {
-		if (mouseY >= 385 && mouseY <= 415) {
-			if (mouseX >= 215 && mouseX <= 280) {
-				dificuldade = facil;
-			} else if (mouseX >= 285 && mouseX <= 350) {
-				dificuldade = medio;
-			} else if (mouseX >= 360 && mouseX <= 425) {
-				dificuldade = dificil;
-			}
-		}
-
-		if ((mouseY >= 355 && mouseY <= 385)) {
-			if (mouseX >= 215 && mouseX <= 280) {
-				passaroCor = "vermelho";
-			} else if (mouseX >= 285 && mouseX <= 350 && pontosTotal >= 4) {
-				passaroCor = "amarelo";
-			} else if (mouseX >= 360 && mouseX <= 425 && pontosTotal >= 15) {
-				passaroCor = "azul";
-			}
-		}
-	}
-
-
-}
-
-function nivelESDL() {
-	background('white');
-
-	imageMode(CORNER);
-	image(video, 0, 0);
-
-	if (crashou == false) {
-		tunelX = tunelX - 1 * dificuldade;
-		iconX = iconX - 1 * dificuldade;
-	}
-
-	const nivel = new Nivel(1, tunelX, topY, iconX, iconY, esdlbadge, pontos.esdl);
-
-	nivel.show();
-	switch (passaroCor) {
-		case "vermelho":
-			nivel.passaro(birdVermelho);
-			break;
-		case "amarelo":
-			nivel.passaro(birdAmarelo);
-			break;
-		case "azul":
-			nivel.passaro(birdAzul);
-			break;
-
-		default:
-			break;
-	}
-	nivel.extras();
-}
-
-function nivelESS() {
-	background('white');
-
-	imageMode(CORNER);
-	image(video, 0, 0);
-
-	if (crashou == false) {
-		tunelX = tunelX - 1 * dificuldade;
-		iconX = iconX - 1 * dificuldade;
-	}
-
-	const nivel = new Nivel(2, tunelX, topY, iconX, iconY, essbadge, pontos.ess);
-
-	nivel.show();
-	switch (passaroCor) {
-		case "vermelho":
-			nivel.passaro(birdVermelho);
-			break;
-		case "amarelo":
-			nivel.passaro(birdAmarelo);
-			break;
-		case "azul":
-			nivel.passaro(birdAzul);
-			break;
-
-		default:
-			break;
-	}
-	nivel.extras();
-}
-
-function nivelESE() {
-	background('white');
-
-	imageMode(CORNER);
-	image(video, 0, 0);
-
-	if (crashou == false) {
-		tunelX = tunelX - 1 * dificuldade;
-		iconX = iconX - 1 * dificuldade;
-	}
-
-	const nivel = new Nivel(3, tunelX, topY, iconX, iconY, esebadge, pontos.ese);
-
-	nivel.show();
-	switch (passaroCor) {
-		case "vermelho":
-			nivel.passaro(birdVermelho);
-			break;
-		case "amarelo":
-			nivel.passaro(birdAmarelo);
-			break;
-		case "azul":
-			nivel.passaro(birdAzul);
-			break;
-
-		default:
-			break;
-	}
-	nivel.extras();
-}
-
-function nivelESCE() {
-	background('white');
-
-	imageMode(CORNER);
-	image(video, 0, 0);
-
-	if (crashou == false) {
-		tunelX = tunelX - 1 * dificuldade;
-		iconX = iconX - 1 * dificuldade;
-	}
-
-	const nivel = new Nivel(4, tunelX, topY, iconX, iconY, escebadge, pontos.esce);
-
-	nivel.show();
-	switch (passaroCor) {
-		case "vermelho":
-			nivel.passaro(birdVermelho);
-			break;
-		case "amarelo":
-			nivel.passaro(birdAmarelo);
-			break;
-		case "azul":
-			nivel.passaro(birdAzul);
-			break;
-
-		default:
-			break;
-	}
-	nivel.extras();
-}
-
-function nivelESA() {
-	background('white');
-
-	imageMode(CORNER);
-	image(video, 0, 0);
-
-	if (crashou == false) {
-		tunelX = tunelX - 1 * dificuldade;
-		iconX = iconX - 1 * dificuldade;
-	}
-
-	const nivel = new Nivel(5, tunelX, topY, iconX, iconY, esabadge, pontos.esa);
-
-	nivel.show();
-	switch (passaroCor) {
-		case "vermelho":
-			nivel.passaro(birdVermelho);
-			break;
-		case "amarelo":
-			nivel.passaro(birdAmarelo);
-			break;
-		case "azul":
-			nivel.passaro(birdAzul);
-			break;
-
-		default:
-			break;
-	}
-	nivel.extras();
-}
-
-function nivelESTG() {
-	background('white');
-
-	imageMode(CORNER);
-	image(video, 0, 0);
-
-	if (crashou == false) {
-		tunelX = tunelX - 1 * dificuldade;
-		iconX = iconX - 1 * dificuldade;
-	}
-
-	const nivel = new Nivel(11, tunelX, topY, iconX, iconY, estgbadge, pontos.estg);
-
-	nivel.show();
-	switch (passaroCor) {
-		case "vermelho":
-			nivel.passaro(birdVermelho);
-			break;
-		case "amarelo":
-			nivel.passaro(birdAmarelo);
-			break;
-		case "azul":
-			nivel.passaro(birdAzul);
-			break;
-
-		default:
-			break;
-	}
-	nivel.extras();
 }
 
 /* 

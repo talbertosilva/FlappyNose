@@ -82,5 +82,12 @@ class Nivel {
 		textAlign(CENTER);
 		textFont(newFont);
 		text(`${this.pontos}`, width / 2, 65);
+
+		var recordePassado = getItem('recorde');
+		if(this.pontos > recordePassado){
+			storeItem(`recorde`, this.pontos);
+		} else if(recordePassado == null || recordePassado == undefined){
+			storeItem(`recorde`, this.pontos);
+		}
 	}
 }
