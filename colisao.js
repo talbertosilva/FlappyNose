@@ -16,6 +16,7 @@ function testarColisão(i) {
 			recordeRanking.push(recorde);
 			inicio = true;
 			crashou = false;
+			tirouFoto = false;
 		}, 750)
 	}
 
@@ -30,6 +31,7 @@ function testarColisão(i) {
 			recordeRanking.push(recorde);
 			inicio = true;
 			crashou = false;
+			tirouFoto = false;
 		}, 750)
 	}
 

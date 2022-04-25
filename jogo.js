@@ -1,6 +1,9 @@
 var x, y, topY = [], iconY = [], collected = [];
 
 let video;
+let videoFoto;
+let imgVideo;
+let numImg = 0;
 
 let noseY = 0;
 
@@ -11,6 +14,7 @@ let tunelX;
 let iconX;
 
 let crashou = false;
+let novoRecorde = false;
 
 /* Pontos iniciais de cada nível */
 let pontos = { estg: 0, ese: 0, esa: 0, esce: 0, esdl: 0, ess: 0 };
@@ -44,9 +48,6 @@ let textoY = 480 - 18;
 let carregou = false;
 let meio = false;
 
-/* Variável que define a velocidade do jogo */
-let facil = 2.5, medio = 4, dificil = 6;
-let dificuldade = facil;
 let dificuldadeRecorde = 2.5;
 let passaroCor = "vermelho";
 
@@ -56,14 +57,24 @@ let terminarRecorde = false;
 let novaSkin = false;
 let passouNivel = false;
 
+let segundos;
+let start_time;
+
+let tirouFoto = false;
+
 /* Função para preparação do ambiente do jogo */
 function setup() {
 	createCanvas(640, 480);
 
 	preload();
 
+	videoFoto = createCapture(VIDEO);
+	videoFoto.hide();
 	video = createCapture(VIDEO);
 	video.hide();
+
+	downloadNum = getItem('numeroImagem');
+	imagemCarregada = loadImage(`data/recorde-imagem(${downloadNum}).png`);
 
 	poseNet = ml5.poseNet(video, modelLoaded);
 
@@ -92,6 +103,7 @@ function modelLoaded() {
 
 function draw() {
 	pontosTotal = pontos.estg + pontos.ese + pontos.esa + pontos.esce + pontos.esdl + pontos.ess;
+	segundos = millis();
 
 	if (carregou == false) {
 		image(loading, 0, 0);
@@ -115,24 +127,6 @@ function draw() {
 				telaRecorde();
 			} else {
 				switch (nivel) {
-					case 1:
-						nivelESDL();
-						break;
-					case 2:
-						nivelESS();
-						break;
-					case 3:
-						nivelESE();
-						break;
-					case 4:
-						nivelESCE();
-						break;
-					case 5:
-						nivelESA();
-						break;
-					case 6:
-						nivelESTG();
-						break;
 					case 7:
 						recordeNivel();
 						break;
@@ -142,30 +136,6 @@ function draw() {
 			}
 		} else if (conquista && inicio == false) {
 			telaConquista();
-		}
-
-		if (passouNivel == true) {
-			imageMode(CORNER);
-			image(badgeColetado, -5, 415);
-		}
-
-		if (novaSkin == true) {
-			imageMode(CORNER);
-			image(skinDesbloqueada, -5, 365);
-		}
-		if (pontosTotal == 4 && skinsUnlocked < 1) {
-			novaSkin = true;
-			setTimeout(function () {
-				novaSkin = false;
-				skinsUnlocked = 1;
-			}, 5000);
-		}
-		if (pontosTotal == 15 && skinsUnlocked < 2) {
-			novaSkin = true;
-			setTimeout(function () {
-				novaSkin = false;
-				skinsUnlocked = 2;
-			}, 5000);
 		}
 	}
 }
@@ -178,29 +148,33 @@ function faseinicio() {
 	tunelX = 320;
 	iconX = 480;
 
-
 	imageMode(CORNER);
 	image(begin, 0, 0);
 	imageMode(CENTER);
 	image(botao, width / 2, 300);
 
-
-
 	pontosSaved = getItem('recorde');
-
 
 	fill(48, 64, 43);
 	textAlign(CENTER, CENTER);
-	textSize(24);
-	text(`recorde`, width / 2, 350);
+	textSize(21);
+	text(`recorde`, 373, 350);
 	textSize(72);
-	text(`${pontosSaved}`, width / 2, 388);
+	text(`${pontosSaved}`, 373, 388);
 
+	if (imgVideo != null) {
+		imageMode(CORNER);
+		image(imgVideo, 215, 345, 100, 75);
+	} else if (imgVideo == null){
+		imageMode(CORNER);
+		image(imagemCarregada, 215, 345, 100, 75);
+	}
 
+	imageMode(CENTER);
 	textSize(16);
 	fill(48, 64, 43);
 	textFont(newFont);
-	textAlign(CORNER);
+	textAlign(CORNER, CORNER);
 	text("Trabalho realizado por:		João Pires		Nelson Dias		Tiago Silva				engenharia da computação gráfica e multimédia", textoX, textoY);
 	textoX = textoX - 1.5;
 
@@ -208,10 +182,13 @@ function faseinicio() {
 		textoX = 640;
 	}
 
-	if ((noseY >= 260 && noseY <= 330) && inicio) {
-		image(botaoOn, width / 2, 300, 220, 65);
-		setTimeout(function() {
-			if ((noseY >= 260 && noseY <= 330) && inicio) {
+	if (inicio) {
+		if (noseY >= 260 && noseY <= 330) {
+			image(botaoOn, width / 2, 300, 220, 65);
+			if (start_time == null) {
+				start_time = segundos;
+			}
+			if (segundos - start_time >= 3000) {
 				for (let i = 1; i < 999; i++) {
 					topY[i] = random(-540, -440);
 				}
@@ -222,42 +199,21 @@ function faseinicio() {
 				}
 
 				inicio = !inicio;
+				start_time = null;
 				recorde = 0;
+				novoRecorde = false;
 				screenRecorde = false;
 				dificuldadeRecorde = 2.5;
 				nivel = 7;
 			}
-		}, 3000);
+		} else {
+			start_time = null;
+		}
 	}
 
 	fill(255);
 	noStroke();
 	ellipse(320, noseY, 16, 16);
-}
-
-function mouseClicked() {
-
-	if ((mouseX >= width / 2 - 105 && mouseX <= width / 2 + 105 && mouseY >= 285 && mouseY <= 315) && inicio) {
-		/* 	
-			É feito um random para 999 posições possíveis,
-			e apenas apresentado as necessárias,
-			por exemplo num nível de 5 tuneis, será apenas utilizado 5 randoms
-		*/
-		for (let i = 1; i < 999; i++) {
-			topY[i] = random(-540, -440);
-		}
-		for (let i = 1; i < 999; i++) {
-			iconY[i] = random(100, 350);
-
-			collected[i] = true;
-		}
-
-		inicio = !inicio;
-		recorde = 0;
-		screenRecorde = false;
-		dificuldadeRecorde = 2.5;
-		nivel = 7;
-	}
 }
 
 /* 
@@ -267,7 +223,13 @@ function recordeNivel() {
 	background('white');
 
 	imageMode(CORNER);
+	image(videoFoto, 0, 0);
 	image(video, 0, 0);
+
+	if (millis() >= 3000 && tirouFoto == false && novoRecorde) {
+		shoot();
+		tirouFoto = true;
+	}
 
 	// -- Quando perder o jogo (crashou == true), a movimentação dos tuneis e dos simbolos, pára
 	if (crashou == false) {
@@ -276,24 +238,21 @@ function recordeNivel() {
 	}
 
 	// -- Velocidade sempre a crescer
-	dificuldadeRecorde = dificuldadeRecorde + 0.001;
+	dificuldadeRecorde = dificuldadeRecorde + 0.005;
 
 	// -- Criação do devido nivel com os respectivos valores
 	const nivel = new Nivel(999, tunelX, topY, iconX, iconY, estgbadge, recorde);
 	nivel.show();
-	switch (passaroCor) {
-		case "vermelho":
-			nivel.passaro(birdVermelho);
-			break;
-		case "amarelo":
-			nivel.passaro(birdAmarelo);
-			break;
-		case "azul":
-			nivel.passaro(birdAzul);
-			break;
-
-		default:
-			break;
-	}
+	nivel.passaro(birdVermelho);
 	nivel.extras();
+}
+
+function shoot() {
+	if (tirouFoto == false && novoRecorde) {
+		imgVideo = videoFoto.get(0, 0, 640, 480);
+		numImg+=1;
+		storeItem('numeroImagem', numImg);
+		localNum = getItem('numeroImagem');
+		imgVideo.save(`recorde-imagem(${localNum})`, 'png')
+	}
 }

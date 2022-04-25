@@ -84,9 +84,10 @@ class Nivel {
 		text(`${this.pontos}`, width / 2, 65);
 
 		var recordePassado = getItem('recorde');
-		if(this.pontos > recordePassado){
+		if (this.pontos > recordePassado) {
+			novoRecorde = true;
 			storeItem(`recorde`, this.pontos);
-		} else if(recordePassado == null || recordePassado == undefined){
+		} else if (recordePassado == null || recordePassado == undefined) {
 			storeItem(`recorde`, this.pontos);
 		}
 	}
